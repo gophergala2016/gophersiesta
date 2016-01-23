@@ -27,7 +27,8 @@ func main() {
 
 	router.Run(":" + getPort()	)
 }
-fmt
+
+
 func getPort() string {
 	var port = os.Getenv("PORT")
 	// Set a default port if there is nothing in the environment
