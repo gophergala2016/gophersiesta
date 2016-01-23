@@ -27,7 +27,9 @@ type Properties struct {
 
 func StartServer() {
 
-	storage = &server.Ethereal{}
+	//storage = &server.Ethereal{} // RAM
+	storage = &server.LevelDB{"db/options", nil, nil, nil} // LevelDB
+
 	storage.Init()
 
 	storage.SetOption("app1", "prod", "datasource.url", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
