@@ -1,0 +1,39 @@
+{
+	"ImportPath": "github.com/gophergala2016/gophersiesta",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/gin-gonic/gin",
+			"Comment": "v1.0rc1-148-g52fcc5d",
+			"Rev": "52fcc5dbf6e94df33ad313858fb94b713e9d1b4a"
+		},
+		{
+			"ImportPath": "github.com/manucorporat/sse",
+			"Rev": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Rev": "3dac7b4f76f6e17fb39b768b89e3783d16e237fe"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "972f0c5fbe4ae29e666c3f78c3ed42ae7a448b0a"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "20457ee8ea8546920d3f4e19e405da45250dc5a5"
+		},
+		{
+			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
+			"Comment": "v5.12",
+			"Rev": "d5acf1dac43705f8bfbb71d878e290e2bed3950b"
+		}
+	]
+}

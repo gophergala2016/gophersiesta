@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -25,5 +25,3 @@ func main() {
 
 	router.Run(":8080")
 }
-
-
