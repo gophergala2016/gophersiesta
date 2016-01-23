@@ -1,15 +1,26 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"io/ioutil"
-	"encoding/json"
+	"strings"
 )
+
+type Property struct {
+	PropertyName string `json:"property_name"` // the full path to the property datasource.url
+	PropertyValue string `json:"property_value"` // ${DATASOURCE_URL:jdbc:mysql://localhost:3306/shcema?profileSQL=true}
+	PlaceHolder string `json:"placeholder"`// DATASOURCE_URL
+}
+
+type Properties struct {
+	Properties []*Property `json:"properties"`
+}
 
 func StartServer() {
 	router := gin.Default()
@@ -22,7 +33,7 @@ func StartServer() {
 			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 		} else {
 			filename := myViper.ConfigFileUsed()
-			c.String(http.StatusOK, safeFileRead(filename) + "\n")
+			c.String(http.StatusOK, safeFileRead(filename)+"\n")
 
 		}
 	})
@@ -34,20 +45,11 @@ func StartServer() {
 		if err != nil {
 			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 		} else {
-			list := getPlaceHolders(myViper)
-			list_json, _ := json.Marshal(list)
-			c.String(http.StatusOK, string(list_json))
+			properties := getPlaceHolders(myViper)
+			propsJson, _ := json.Marshal(properties)
+			c.String(http.StatusOK, string(propsJson))
 		}
 	})
-
-	// However, this one will match /conf/app1/ and also /conf/app1/send
-	// If no other routers match /conf/app1, it will redirect to /conf/app1/
-	/*router.GET("/conf/:appname/*action", func(c *gin.Context) {
-		name := c.Param("appname")
-		action := c.Param("action")
-		message := name + " is " + action + "\n"
-		c.String(http.StatusOK, message)
-	})        */
 
 	router.Run(getPort())
 }
@@ -82,17 +84,53 @@ func safeFileRead(filename string) string {
 	return string(fileContent)
 }
 
-func getPlaceHolders(conf *viper.Viper) map[string]string {
+func getPlaceHolders(conf *viper.Viper) Properties {
 	list := parseMap(conf.AllSettings())
-	return list
+
+	properties := createProperties(list)
+
+	return Properties{properties}
 }
 
-func parseMap(aMap map[string]interface{}) map[string]string {
+func createProperties(propsMap map[string]string) []*Property{
+	count := len(propsMap)
+
+	ps := make([]*Property, count)
+	i := 0
+	for k, v := range propsMap {
+		p, err := extractPlaceholder(v)
+		if (err == nil){
+			p := &Property{k, v, p}
+			ps[i] = p
+		}
+
+		i++
+	}
+
+	return ps
+}
+
+func extractPlaceholder(s string) (string, error){
+	if s[:2] != "${" {
+		return "", fmt.Errorf("%s does not contain any placeholder with format ${PLACEHOLER_VARIABLE[:defaultvalue]}", s)
+	}
+
+	if s[len(s)-1:len(s)] != "}" {
+		return "", fmt.Errorf("%s does not contain any placeholder with format ${PLACEHOLER_VARIABLE[:defaultvalue]}", s)
+	}
+
+	s = s[2:]
+	s = s[0:len(s)-1]
+
+	return strings.Split(s, ":")[0], nil
+}
+
+func parseMap(props map[string]interface{}) map[string]string {
 	list := make(map[string]string)
-	for key, value := range aMap {
+	for key, value := range props {
 		switch v := value.(type) {
 		case map[interface{}]interface{}:
-			l := parseMapInterface(v)
+			l := parseMapInterface(v, key, list)
 			for pkey, pvalue := range l {
 				list[pkey] = pvalue
 			}
@@ -106,18 +144,16 @@ func parseMap(aMap map[string]interface{}) map[string]string {
 	return list
 }
 
-func parseMapInterface(aMap map[interface{}]interface{}) map[string]string {
-	list := make(map[string]string)
-	for key, value := range aMap {
+func parseMapInterface(props map[interface{}]interface{}, key string, list map[string]string) map[string]string {
+	for k, value := range props {
+		actKey := key + "." + fmt.Sprint(k)
+
 		switch v := value.(type) {
 		case map[interface{}]interface{}:
-			l := parseMapInterface(v)
-			for pkey, pvalue := range l {
-				list[pkey] = pvalue
-			}
+			list = parseMapInterface(v, actKey, list)
 		case string:
 			if v[:2] == "${" {
-				keystr := fmt.Sprint(key) // <-- HACK
+				keystr := fmt.Sprint(actKey) // <-- HACK
 				list[keystr] = v
 			}
 		default:
@@ -125,4 +161,3 @@ func parseMapInterface(aMap map[interface{}]interface{}) map[string]string {
 	}
 	return list
 }
-
