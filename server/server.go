@@ -1,12 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
+	"log"
 	"net/http"
 	"os"
-	"log"
-	"github.com/spf13/viper"
-	"fmt"
 )
 
 func StartServer() {
@@ -16,7 +16,7 @@ func StartServer() {
 	router.GET("/conf/:appname", func(c *gin.Context) {
 		name := c.Param("appname")
 		myViper, err := readConfig(name)
-		if err!=nil {
+		if err != nil {
 			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 		} else {
 			fmt.Println(myViper)
@@ -48,7 +48,7 @@ func getPort() string {
 	return ":" + port
 }
 
-func readConfig(appname string) (*viper.Viper, error){
+func readConfig(appname string) (*viper.Viper, error) {
 
 	aux := viper.New()
 	aux.SetConfigName("config")
