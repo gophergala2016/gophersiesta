@@ -1,1 +1,1 @@
-web: ./gophersiesta
+web: bin/gophersiesta
