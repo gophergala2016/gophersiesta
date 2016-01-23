@@ -9,6 +9,11 @@ import (
 	"os"
 )
 
+type placeHolder struct{
+	variable string
+	value string
+}
+
 func StartServer() {
 	router := gin.Default()
 
@@ -20,6 +25,7 @@ func StartServer() {
 			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 		} else {
 			fmt.Println(myViper)
+			myViper
 			c.String(http.StatusOK, "Config file %s: \n %s", name, myViper.AllSettings())
 
 		}
@@ -61,4 +67,10 @@ func readConfig(appname string) (*viper.Viper, error) {
 
 	return aux, err
 
+}
+
+func getPlaceHolders(conf *viper.Viper) []placeHolder {
+	var list []placeHolder;
+	fmt.Println(viper.AllSettings())
+	fmt.Println(list)
 }
