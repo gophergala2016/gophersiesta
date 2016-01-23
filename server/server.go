@@ -20,7 +20,8 @@ func StartServer() {
 			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 		} else {
 			fmt.Println(myViper)
-			c.String(http.StatusOK, "Config file %s \n", name)
+			c.String(http.StatusOK, "Config file %s: \n %s", name, myViper.AllSettings())
+
 		}
 	})
 
