@@ -3,9 +3,18 @@ package main
 import (
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"net/http"
+	"os"
+	"log"
 )
 
 func main() {
+
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
 	router := gin.Default()
 
 	// This handler will match /conf/appname but will not match neither /conf/ or /conf
@@ -23,5 +32,5 @@ func main() {
 		c.String(http.StatusOK, message)
 	})
 
-	router.Run(":8080")
+	router.Run(":" + port)
 }
