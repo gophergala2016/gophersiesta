@@ -13,3 +13,9 @@ cd server
 
 go run server.go
 ```
+
+## Usage
+
+```
+curl http://localhost:8080/cong/app1
+```
