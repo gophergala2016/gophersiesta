@@ -5,16 +5,10 @@ import (
 	"net/http"
 	"os"
 	"log"
+	"fmt"
 )
 
 func main() {
-
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
-
 	router := gin.Default()
 
 	// This handler will match /conf/appname but will not match neither /conf/ or /conf
@@ -32,5 +26,16 @@ func main() {
 		c.String(http.StatusOK, message)
 	})
 
-	router.Run(":" + port)
+	router.Run(":" + getPort()	)
+}
+
+func getPort() string {
+	var port = os.Getenv("PORT")
+	// Set a default port if there is nothing in the environment
+	if port == "" {
+		port = "4747"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	}
+
+	return ":" + port
 }
