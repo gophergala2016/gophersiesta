@@ -10,9 +10,10 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"github.com/gophergala2016/gophersiesta/server/storage"
 )
 
-var options map[string]map[string]map[string]string
+var storage server.Storage
 
 type Property struct {
 	PropertyName string `json:"property_name"` // the full path to the property datasource.url
@@ -26,18 +27,19 @@ type Properties struct {
 
 func StartServer() {
 
-	options = make(map[string]map[string]map[string]string)
+	storage = &server.Ethereal{}
+	storage.Init()
 
-	setOption("app1", "prod", "datasource.url", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
-	setOption("app1", "", "datasource.username", "GOPHER")
-	setOption("app1", "dev", "datasource.username", "GOPHER-dev")
-	setOption("app1", "prod", "datasource.username", "GOPHER-prod")
-	setOption("app1", "", "datasource.password", "FOOBAR")
-	setOption("app1", "dev", "datasource.password", "LOREM")
-	setOption("app1", "prod", "datasource.password", "IPSUM")
+	storage.SetOption("app1", "prod", "datasource.url", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
+	storage.SetOption("app1", "", "datasource.username", "GOPHER")
+	storage.SetOption("app1", "dev", "datasource.username", "GOPHER-dev")
+	storage.SetOption("app1", "prod", "datasource.username", "GOPHER-prod")
+	storage.SetOption("app1", "", "datasource.password", "FOOBAR")
+	storage.SetOption("app1", "dev", "datasource.password", "LOREM")
+	storage.SetOption("app1", "prod", "datasource.password", "IPSUM")
 
-	setOption("app2", "", "datasource.password", "DOCKER-PASS")
-	setOption("app2", "dev", "datasource.password", "DEV-PASS")
+	storage.SetOption("app2", "", "datasource.password", "DOCKER-PASS")
+	storage.SetOption("app2", "dev", "datasource.password", "DEV-PASS")
 
 	router := gin.Default()
 
@@ -77,13 +79,13 @@ func StartServer() {
 			lbls := strings.Split(labels, ",")
 			// MERGE values of different labels, last overrides current value
 			for _, label := range lbls {
-				l := getOptions(name, label)
+				l := storage.GetOptions(name, label)
 				for k, v := range l {
 					list[k] = v
 				}
 			}
 		} else {
-			list = getOptions(name, labels)
+			list = storage.GetOptions(name, labels)
 		}
 		list_json, _ := json.Marshal(list)
 		c.String(http.StatusOK, string(list_json))
@@ -200,54 +202,3 @@ func parseMapInterface(props map[interface{}]interface{}, key string, list map[s
 	return list
 }
 
-
-func setOption(appname, label, variable, value string) {
-
-	if label=="" {
-		label = "default"
-	}
-
-	if options[appname]==nil {
-		options[appname] = make(map[string]map[string]string)
-	}
-	if options[appname][label]==nil {
-		options[appname][label] = make(map[string]string)
-	}
-
-	options[appname][label][variable] = value
-
-}
-
-func getOption(appname, label, variable string) string {
-
-	if label=="" {
-		label = "default"
-	}
-
-	if options[appname]==nil {
-		options[appname] = make(map[string]map[string]string)
-	}
-	if options[appname][label]==nil {
-		options[appname][label] = make(map[string]string)
-	}
-
-	return options[appname][label][variable]
-
-}
-
-func getOptions(appname, label string) map[string]string {
-
-	if label=="" {
-		label = "default"
-	}
-
-	if options[appname]==nil {
-		options[appname] = make(map[string]map[string]string)
-	}
-	if options[appname][label]==nil {
-		options[appname][label] = make(map[string]string)
-	}
-
-	return options[appname][label]
-
-}
