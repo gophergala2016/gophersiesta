@@ -9,9 +9,25 @@ import (
 	"os"
 	"io/ioutil"
 	"encoding/json"
+	"strings"
 )
 
+var options map[string]map[string]map[string]string
+
 func StartServer() {
+
+	options = make(map[string]map[string]map[string]string)
+
+	setOption("app1", "", "admin", "GOPHER")
+	setOption("app1", "dev", "admin", "GOPHER-dev")
+	setOption("app1", "prod", "admin", "GOPHER-prod")
+	setOption("app1", "", "password", "FOOBAR")
+	setOption("app1", "dev", "password", "LOREM")
+	setOption("app1", "prod", "password", "IPSUM")
+
+	setOption("app2", "", "password", "DOCKER-PASS")
+	setOption("app2", "dev", "password", "DEV-PASS")
+
 	router := gin.Default()
 
 	// This handler will match /conf/appname but will not match neither /conf/ or /conf
@@ -28,7 +44,7 @@ func StartServer() {
 	})
 
 	// Return list of placeholders
-	router.GET("/conf/:appname/values", func(c *gin.Context) {
+	router.GET("/conf/:appname/placeholders", func(c *gin.Context) {
 		name := c.Param("appname")
 		myViper, err := readTemplate(name)
 		if err != nil {
@@ -38,6 +54,28 @@ func StartServer() {
 			list_json, _ := json.Marshal(list)
 			c.String(http.StatusOK, string(list_json))
 		}
+	})
+
+	// Return list of set values
+	router.GET("/conf/:appname/values", func(c *gin.Context) {
+		name := c.Param("appname")
+		labels := c.DefaultQuery("labels", "default")
+
+		list := make(map[string]string)
+		if strings.Contains(labels, ",") {
+			lbls := strings.Split(labels, ",")
+			// MERGE values of different labels, last overrides current value
+			for _, label := range lbls {
+				l := getOptions(name, label)
+				for k, v := range l {
+					list[k] = v
+				}
+			}
+		} else {
+			list = getOptions(name, labels)
+		}
+		list_json, _ := json.Marshal(list)
+		c.String(http.StatusOK, string(list_json))
 	})
 
 	// However, this one will match /conf/app1/ and also /conf/app1/send
@@ -126,3 +164,54 @@ func parseMapInterface(aMap map[interface{}]interface{}) map[string]string {
 	return list
 }
 
+
+func setOption(appname, label, variable, value string) {
+
+	if label=="" {
+		label = "default"
+	}
+
+	if options[appname]==nil {
+		options[appname] = make(map[string]map[string]string)
+	}
+	if options[appname][label]==nil {
+		options[appname][label] = make(map[string]string)
+	}
+
+	options[appname][label][variable] = value
+
+}
+
+func getOption(appname, label, variable string) string {
+
+	if label=="" {
+		label = "default"
+	}
+
+	if options[appname]==nil {
+		options[appname] = make(map[string]map[string]string)
+	}
+	if options[appname][label]==nil {
+		options[appname][label] = make(map[string]string)
+	}
+
+	return options[appname][label][variable]
+
+}
+
+func getOptions(appname, label string) map[string]string {
+
+	if label=="" {
+		label = "default"
+	}
+
+	if options[appname]==nil {
+		options[appname] = make(map[string]map[string]string)
+	}
+	if options[appname][label]==nil {
+		options[appname][label] = make(map[string]string)
+	}
+
+	return options[appname][label]
+
+}
