@@ -1,1 +1,1 @@
-web: start-web-server
+web: ./gophersiesta
