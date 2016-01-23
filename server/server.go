@@ -28,15 +28,16 @@ func StartServer() {
 
 	options = make(map[string]map[string]map[string]string)
 
-	setOption("app1", "", "admin", "GOPHER")
-	setOption("app1", "dev", "admin", "GOPHER-dev")
-	setOption("app1", "prod", "admin", "GOPHER-prod")
-	setOption("app1", "", "password", "FOOBAR")
-	setOption("app1", "dev", "password", "LOREM")
-	setOption("app1", "prod", "password", "IPSUM")
+	setOption("app1", "prod", "datasource.url", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
+	setOption("app1", "", "datasource.username", "GOPHER")
+	setOption("app1", "dev", "datasource.username", "GOPHER-dev")
+	setOption("app1", "prod", "datasource.username", "GOPHER-prod")
+	setOption("app1", "", "datasource.password", "FOOBAR")
+	setOption("app1", "dev", "datasource.password", "LOREM")
+	setOption("app1", "prod", "datasource.password", "IPSUM")
 
-	setOption("app2", "", "password", "DOCKER-PASS")
-	setOption("app2", "dev", "password", "DEV-PASS")
+	setOption("app2", "", "datasource.password", "DOCKER-PASS")
+	setOption("app2", "dev", "datasource.password", "DEV-PASS")
 
 	router := gin.Default()
 
