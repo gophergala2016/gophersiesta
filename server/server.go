@@ -10,23 +10,27 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"strings"
+	"github.com/gophergala2016/gophersiesta/server/storage"
 )
 
-var options map[string]map[string]map[string]string
+var storage server.Storage
 
 func StartServer() {
 
-	options = make(map[string]map[string]map[string]string)
+	storage = &server.Ethereal{}
+	storage.Init()
 
-	setOption("app1", "", "admin", "GOPHER")
-	setOption("app1", "dev", "admin", "GOPHER-dev")
-	setOption("app1", "prod", "admin", "GOPHER-prod")
-	setOption("app1", "", "password", "FOOBAR")
-	setOption("app1", "dev", "password", "LOREM")
-	setOption("app1", "prod", "password", "IPSUM")
 
-	setOption("app2", "", "password", "DOCKER-PASS")
-	setOption("app2", "dev", "password", "DEV-PASS")
+
+	storage.SetOption("app1", "", "admin", "GOPHER")
+	storage.SetOption("app1", "dev", "admin", "GOPHER-dev")
+	storage.SetOption("app1", "prod", "admin", "GOPHER-prod")
+	storage.SetOption("app1", "", "password", "FOOBAR")
+	storage.SetOption("app1", "dev", "password", "LOREM")
+	storage.SetOption("app1", "prod", "password", "IPSUM")
+
+	storage.SetOption("app2", "", "password", "DOCKER-PASS")
+	storage.SetOption("app2", "dev", "password", "DEV-PASS")
 
 	router := gin.Default()
 
@@ -66,13 +70,13 @@ func StartServer() {
 			lbls := strings.Split(labels, ",")
 			// MERGE values of different labels, last overrides current value
 			for _, label := range lbls {
-				l := getOptions(name, label)
+				l := storage.GetOptions(name, label)
 				for k, v := range l {
 					list[k] = v
 				}
 			}
 		} else {
-			list = getOptions(name, labels)
+			list = storage.GetOptions(name, labels)
 		}
 		list_json, _ := json.Marshal(list)
 		c.String(http.StatusOK, string(list_json))
@@ -164,54 +168,3 @@ func parseMapInterface(aMap map[interface{}]interface{}) map[string]string {
 	return list
 }
 
-
-func setOption(appname, label, variable, value string) {
-
-	if label=="" {
-		label = "default"
-	}
-
-	if options[appname]==nil {
-		options[appname] = make(map[string]map[string]string)
-	}
-	if options[appname][label]==nil {
-		options[appname][label] = make(map[string]string)
-	}
-
-	options[appname][label][variable] = value
-
-}
-
-func getOption(appname, label, variable string) string {
-
-	if label=="" {
-		label = "default"
-	}
-
-	if options[appname]==nil {
-		options[appname] = make(map[string]map[string]string)
-	}
-	if options[appname][label]==nil {
-		options[appname][label] = make(map[string]string)
-	}
-
-	return options[appname][label][variable]
-
-}
-
-func getOptions(appname, label string) map[string]string {
-
-	if label=="" {
-		label = "default"
-	}
-
-	if options[appname]==nil {
-		options[appname] = make(map[string]map[string]string)
-	}
-	if options[appname][label]==nil {
-		options[appname][label] = make(map[string]string)
-	}
-
-	return options[appname][label]
-
-}
