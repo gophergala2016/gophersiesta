@@ -17,5 +17,7 @@ go run server.go
 ## Usage
 
 ```
-curl http://localhost:8080/conf/app1
+curl http://localhost:4747/conf/app1
+curl http://localhost:4747/conf/app1/values
+
 ```
