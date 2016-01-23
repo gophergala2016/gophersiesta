@@ -1,7 +1,11 @@
 language: go
 go:
-- 1.5
+  - 1.5
+install:
+  - "go get -d -v ./..."
+  - "go build -v ./..."
 deploy:
   provider: heroku
   api_key: fad6ca13-83b4-4d95-b7a3-64a4f5a5b4d2
   app: gophersiesta
+  file: gophersiesta
