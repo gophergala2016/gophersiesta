@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func main() {
+func StartServer() {
 	router := gin.Default()
 
 	// This handler will match /conf/appname but will not match neither /conf/ or /conf
