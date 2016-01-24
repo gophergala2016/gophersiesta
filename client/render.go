@@ -39,7 +39,12 @@ Fetched from source url.`,
 			source += "/"
 		}
 
-		url := source + "/conf/" + Appname
+		url := source + "/conf/" + Appname + "/render/yml"
+
+		if Label != "" {
+			url = url + "?labels=" + Label
+		}
+
 		fmt.Println(url)
 
 		res, err := http.Get(url)
