@@ -36,8 +36,11 @@ func StartServer() *Server {
 	// Return list of set values
 	server.GET("/conf/:appname/values", handlers.GetValues(db))
 
-	// Return list of set values
+	// Set values
 	server.POST("/conf/:appname/values", handlers.SetValues(db))
+
+	// Return the rendered template
+	server.GET("/conf/:appname/render/:format", handlers.ReplacePlaceholders(db))
 
 	// Return list of set labels
 	server.GET("/conf/:appname/labels", handlers.GetLabels(db))
