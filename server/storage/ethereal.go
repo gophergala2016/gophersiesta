@@ -1,4 +1,4 @@
-package server
+package storage
 
 
 type Ethereal struct {
