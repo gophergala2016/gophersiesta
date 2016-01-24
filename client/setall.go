@@ -1,16 +1,16 @@
 package client
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/cobra"
+	"github.com/gophergala2016/gophersiesta/server/placeholders"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"github.com/gophergala2016/gophersiesta/server/placeholders"
-	"bufio"
 	"os"
-	"bytes"
 )
 
 // setCmd represents the set command
@@ -23,9 +23,43 @@ var setAllCmd = &cobra.Command{
 	},
 }
 
-func getPlaceholders(){
+func getPlaceholders() {
 
-	 pls := &placeholders.Placeholders{}
+	pls, err := readPlaceHolders()
+
+	if err != nil {
+		log.Fatal("Could not get Placehodlers")
+	}
+
+	mValues, err := readValues()
+
+	if err != nil {
+		log.Fatal("Could not get Placehodlers current stored values")
+	}
+
+	fmt.Printf("\nThere are %v placeholders. Listing: \n", len(pls.Placeholders))
+
+	for _, p := range pls.Placeholders {
+		fmt.Printf("%s [$%s]\n", p.PropertyName, p.PlaceHolder)
+	}
+
+
+
+	fmt.Printf("\n\n")
+	fmt.Printf("Type value for each placeholder and press ENTER, or ENTER to skip or left as before: \n")
+	fmt.Printf("	explanation: property.path [$PLACE_HOLDER] --> curentvalue \n")
+
+	for _, p := range pls.Placeholders {
+
+		pv := mValues[p.PlaceHolder]
+
+		setPropertyHolderValue(p, pv)
+	}
+
+}
+
+func readPlaceHolders() (*placeholders.Placeholders, error) {
+	pls := &placeholders.Placeholders{}
 
 	if Source == "" {
 		Source = "https://gophersiesta.herokuapp.com/"
@@ -35,56 +69,70 @@ func getPlaceholders(){
 	}
 	url := Source + "conf/" + Appname + "/placeholders"
 
-	if (Label != ""){
+	if Label != "" {
 		url = url + "?labels=" + Label
 	}
 
 	fmt.Println("[api call] " + url)
 	res, err := http.Get(url)
+
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
+
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 
 	err = json.Unmarshal(body, pls)
 
-	if (err != nil){
-		log.Fatal("Could not get Placehodlers")
+	if err != nil {
+		return nil, err
 	}
 
-	fmt.Printf("There must be %v placeholders set. Listing: \n", len(pls.Placeholders))
-
-	for _, p := range pls.Placeholders {
-		fmt.Printf("%s[%s]\n", p.PropertyName, p.PlaceHolder)
-	}
-
-	fmt.Printf("Type value for each placeholder: \n")
-
-	var buff bytes.Buffer
-	for i, p := range pls.Placeholders {
-		setPropertyderValue(p)
-		buff.WriteString(p.PlaceHolder)
-		buff.WriteString("=")
-		buff.WriteString(p.PropertyValue)
-
-		if i != len(pls.Placeholders) -1 {
-			buff.WriteString(",")
-		}
-	}
-
-	SendProp(string(buff.Bytes()))
+	return pls, err
 }
 
-func setPropertyderValue(p *placeholders.Placeholder){
+func readValues() (map[string]string, error){
 
-	fmt.Printf("%s[%s]:", p.PropertyName, p.PlaceHolder)
+	vs := &placeholders.Values{}
+	mValues := make(map[string]string)
+
+	body := GetValues()
+
+	err := json.Unmarshal(body, vs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range vs.Values {
+		mValues[v.Name] = v.Value
+	}
+
+	return mValues, err
+}
+
+func setPropertyHolderValue(p *placeholders.Placeholder, currentVal string) {
+	var value string
+	fmt.Printf("%s [$%s] --> %s:", p.PropertyName, p.PlaceHolder, currentVal)
 
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for scanner.Scan() {
-		p.PropertyValue = scanner.Text()
-		break;
+		value = scanner.Text()
+		break
+	}
+
+	// send Property
+	if value != "" {
+
+		var buff bytes.Buffer
+
+		buff.WriteString(p.PlaceHolder)
+		buff.WriteString("=")
+		buff.WriteString(value)
+
+		SendProp(string(buff.Bytes()))
 	}
 }
 
