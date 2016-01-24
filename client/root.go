@@ -18,12 +18,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/cobra"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
 )
 
 var cfgFile string
-
 
 // This represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -37,9 +36,9 @@ var RootCmd = &cobra.Command{
 /____  >__|\___  >____  > |__| (____  /
      \/        \/     \/            \/
 `,
-// Uncomment the following line if your bare application
-// has an action associated with it:
-//	Run: func(cmd *cobra.Command, args []string) { },
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -62,8 +61,8 @@ func initConfig() {
 	}
 
 	viper.SetConfigName(".gophersiesta") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")  // adding home directory as first search path
-	viper.AutomaticEnv()          // read in environment variables that match
+	viper.AddConfigPath("$HOME")         // adding home directory as first search path
+	viper.AutomaticEnv()                 // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {

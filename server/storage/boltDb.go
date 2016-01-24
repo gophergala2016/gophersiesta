@@ -1,18 +1,19 @@
 package storage
+
 import (
-	"github.com/boltdb/bolt"
-	"log"
-	"fmt"
 	"bytes"
+	"fmt"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/boltdb/bolt"
+	"log"
 	"strings"
 )
 
 type BoltDb struct {
-	Path string
-	Name string
-	PropsBucketName []byte
+	Path             string
+	Name             string
+	PropsBucketName  []byte
 	LabelsBucketName []byte
-		 *bolt.DB
+	*bolt.DB
 }
 
 func (s *BoltDb) Init() {
@@ -42,7 +43,7 @@ func (s *BoltDb) Init() {
 	})
 }
 
-func (s *BoltDb) GetLabels(appName string) []string{
+func (s *BoltDb) GetLabels(appName string) []string {
 	lbls := make([]string, 0)
 
 	prefix := []byte(appName)
@@ -57,12 +58,11 @@ func (s *BoltDb) GetLabels(appName string) []string{
 
 			_, _, err := parseLabelKey(k)
 
-			if (err != nil){
+			if err != nil {
 				log.Print(err)
-			}else{
+			} else {
 				lbls = append(lbls, parseValue(v))
 			}
-
 
 		}
 
@@ -73,8 +73,6 @@ func (s *BoltDb) GetLabels(appName string) []string{
 }
 
 func (s *BoltDb) SetOption(appName string, label string, variable string, value string) {
-
-
 
 	s.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(s.PropsBucketName)
@@ -112,7 +110,7 @@ func (s *BoltDb) GetOption(appName string, label string, variable string) string
 
 func parseValue(v []byte) string {
 
-	if v != nil{
+	if v != nil {
 
 		return string(v[:len(v)])
 	}
@@ -120,15 +118,14 @@ func parseValue(v []byte) string {
 	return ""
 }
 
-
 func parsePropertyKey(v []byte) (appName string, label string, variable string, err error) {
 
-	if v != nil{
+	if v != nil {
 		k := string(v[:len(v)])
 
 		parts := strings.Split(k, "-")
 
-		if (len(parts) != 3){
+		if len(parts) != 3 {
 			return appName, label, variable, fmt.Errorf("The key is not structured like appName-labels-variable\n")
 		}
 
@@ -142,15 +139,14 @@ func parsePropertyKey(v []byte) (appName string, label string, variable string, 
 	return appName, label, variable, fmt.Errorf("value is nil")
 }
 
-
 func parseLabelKey(v []byte) (appName string, label string, err error) {
 
-	if v != nil{
+	if v != nil {
 		k := string(v[:len(v)])
 
 		parts := strings.Split(k, "-")
 
-		if (len(parts) != 2){
+		if len(parts) != 2 {
 			return appName, label, fmt.Errorf("The key %s is not structured like appName-labels\n", k)
 		}
 
@@ -179,12 +175,11 @@ func (s *BoltDb) GetOptions(appName, label string) map[string]string {
 
 			_, _, variable, err := parsePropertyKey(k)
 
-			if (err != nil){
+			if err != nil {
 				log.Print(err)
-			}else{
+			} else {
 				props[variable] = parseValue(v)
 			}
-
 
 		}
 
@@ -212,7 +207,6 @@ func getLabelKey(appName string, label string) []byte {
 	return []byte(fmt.Sprintf("%s-%s", appName, getLabel(label)))
 }
 
-
-func (s *BoltDb) Close(){
+func (s *BoltDb) Close() {
 	s.Close()
 }

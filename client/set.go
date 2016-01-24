@@ -1,33 +1,33 @@
 package client
 
 import (
-	"github.com/spf13/cobra"
-	"fmt"
-	"net/http"
-	"io/ioutil"
-	"encoding/json"
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/cobra"
+	"io/ioutil"
 	"log"
+	"net/http"
 )
 
 // setCmd represents the set command
 var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set the values to configuration manager. Needed {appname + label}",
-	Long: "Set the values to be setup. From appname + label",
+	Long:  "Set the values to be setup. From appname + label",
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 		var res *http.Response
 
-		if Source=="" {
+		if Source == "" {
 			Source = "https://gophersiesta.herokuapp.com/"
 		}
-		if Source[len(Source)-1:]!="/" {
+		if Source[len(Source)-1:] != "/" {
 			Source += "/"
 		}
 		Url := Source + "conf/" + Appname + "/values"
-		fmt.Println( Url )
+		fmt.Println(Url)
 
 		// Data is already a json (or should be)
 		/*jsonString, jsonError := json.Marshal(params)
@@ -42,17 +42,17 @@ var setCmd = &cobra.Command{
 		fmt.Println(Properties)
 		req, _ := http.NewRequest("POST", Url, bytes.NewBuffer([]byte(Properties)))
 		res, err = client.Do(req)
-		if err!=nil {
+		if err != nil {
 			log.Fatal(err)
 		}
 		body, err := ioutil.ReadAll(res.Body)
-		if err!=nil {
+		if err != nil {
 			log.Fatal(err)
 		}
 		res.Body.Close()
-		var data string//map[string]interface{}{}
+		var data string //map[string]interface{}{}
 		json.Unmarshal(body, &data)
-		
+
 		fmt.Println(data)
 	},
 }
