@@ -1,4 +1,4 @@
-package server
+package storage
 import (
 	"github.com/boltdb/bolt"
 	"log"
