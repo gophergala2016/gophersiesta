@@ -1,12 +1,5 @@
 # GOPHERSIESTA
 
-.      .__                 __
-  _____|__| ____   _______/  |______
- /  ___/  |/ __ \ /  ___/\   __\__  \
- \___ \|  \  ___/ \___ \  |  |  / __ \_
-/____  >__|\___  >____  > |__| (____  /
-     \/        \/     \/            \/
-
 A manager/service for configurations files, properties placeholders and their values separated by application and namespaces.
 GopherSiesta is composed of two parts, a server and an example command line client to communicate with the server's API.
 
