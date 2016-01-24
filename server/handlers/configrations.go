@@ -4,8 +4,9 @@ import (
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"net/http"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
-	"io/ioutil"
 	"github.com/gophergala2016/gophersiesta/server/storage"
+	"os"
+	"io"
 )
 
 
@@ -16,11 +17,20 @@ type Labels struct {
 func GetConfig(c *gin.Context) {
 	name := c.Param("appname")
 	myViper, err := readTemplate(name)
+
 	if err != nil {
 		c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 	} else {
 		filename := myViper.ConfigFileUsed()
-		c.String(http.StatusOK, safeFileRead(filename)+"\n")
+		content, err := fileReader(filename)
+
+		if (err != nil){
+			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
+		}
+		w := c.Writer
+
+		io.Copy(w, content)
+
 	}
 }
 
@@ -48,10 +58,12 @@ func readTemplate(appname string) (*viper.Viper, error) {
 
 }
 
-func safeFileRead(filename string) string {
-	fileContent, errFile := ioutil.ReadFile(filename)
+func fileReader(filename string) (io.Reader, error) {
+	file, errFile := os.Open(filename)
+
 	if errFile != nil {
-		fileContent = []byte("")
+		return nil, errFile
 	}
-	return string(fileContent)
+
+	return file, errFile
 }
