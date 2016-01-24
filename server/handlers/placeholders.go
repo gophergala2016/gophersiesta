@@ -10,6 +10,11 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"regexp"
+	"bytes"
+	"github.com/BurntSushi/toml"
+	"gopkg.in/yaml.v2"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
+	"path/filepath"
 )
 
 func GetPlaceHolders(c *gin.Context) {
@@ -82,6 +87,7 @@ func ReplacePlaceholders(s storage.Storage) func (c *gin.Context){
 	return func (c *gin.Context) {
 		name := c.Param("appname")
 		labels := c.DefaultQuery("labels", "default")
+		renderType := c.Param("format")
 
 		list := make(map[string]*placeholders.Placeholder)
 
@@ -113,10 +119,61 @@ func ReplacePlaceholders(s storage.Storage) func (c *gin.Context){
 				template = re.ReplaceAllString(template, v.PropertyValue)
 			}
 
-			//myViper.ReadConfig(bytes.NewBuffer(template))
+			replacedViper :=  viper.New()
+			extension := filepath.Ext(filename)
 
-			c.String(http.StatusOK, template)
+			extension = strings.Replace(extension, ".", "", 1)
+
+			replacedViper.SetConfigType(extension)
+			replacedViper.ReadConfig(bytes.NewBuffer([]byte(template)))
+			b , err := render(replacedViper, renderType)
+
+			if err == nil {
+				c.Data(http.StatusOK, "text/plain", b)
+			}else{
+				c.String(http.StatusInternalServerError, "Could not render %s", err)
+			}
 		}
 
 	}
+}
+
+
+func render(v *viper.Viper, configOutputType string) ([]byte, error) {
+
+	var b []byte
+	var err error
+	var conf  = make(map[string]interface{})
+
+	m := v.AllSettings()
+
+	b, err = yaml.Marshal(m)
+
+	err = yaml.Unmarshal(b, conf)
+
+	if err == nil {
+		switch configOutputType {
+		case "json":
+
+			b, err = json.MarshalIndent(conf, "", "    ")
+
+		case "toml":
+			var buff bytes.Buffer
+
+			err = toml.NewEncoder(&buff).Encode(conf)
+			b = buff.Bytes()
+
+		case "yaml", "yml":
+
+			b, err = yaml.Marshal(conf)
+
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+
 }
