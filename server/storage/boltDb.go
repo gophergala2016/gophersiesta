@@ -4,6 +4,7 @@ import (
 	"log"
 	"fmt"
 	"bytes"
+	"strings"
 )
 
 type BoltDb struct {
@@ -77,6 +78,28 @@ func parseValue(v []byte) string {
 	return ""
 }
 
+
+func parseKey(v []byte) (appName string, label string, variable string, err error) {
+
+	if v != nil{
+		k := string(v[:len(v)])
+
+		parts := strings.Split(k, "-")
+
+		if (len(parts) != 3){
+			return appName, label, variable, fmt.Errorf("The key is not structured like appName-labels-variable")
+		}
+
+		appName = parts[0]
+		label = parts[1]
+		variable = parts[2]
+
+		return appName, label, variable, nil
+	}
+
+	return appName, label, variable, fmt.Errorf("value is nil")
+}
+
 func (s *BoltDb) GetOptions(appName, label string) map[string]string {
 
 	props := make(map[string]string)
@@ -90,7 +113,15 @@ func (s *BoltDb) GetOptions(appName, label string) map[string]string {
 		c := b.Cursor()
 
 		for k, v := c.Seek(prefix); bytes.HasPrefix(k, prefix); k, v = c.Next() {
-			props[parseValue(k)] = parseValue(v)
+
+			_, _, variable, err := parseKey(k)
+
+			if (err != nil){
+				log.Print(err)
+			}
+
+			props[variable] = parseValue(v)
+
 		}
 
 		return nil

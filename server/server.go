@@ -77,8 +77,11 @@ func StartServer() *Server {
 		} else {
 			list = storage.GetOptions(name, labels)
 		}
-		list_json, _ := json.Marshal(list)
-		c.String(http.StatusOK, string(list_json))
+
+		vs := placeholders.CreateValues(list);
+
+		vs_json, _ := json.Marshal(vs)
+		c.String(http.StatusOK, string(vs_json))
 	})
 
 	server.Run(getPort())
