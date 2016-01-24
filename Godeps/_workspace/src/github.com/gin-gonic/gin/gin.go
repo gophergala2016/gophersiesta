@@ -11,7 +11,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin/render"
+	"github.com/gin-gonic/gin/render"
 )
 
 // Framework's version

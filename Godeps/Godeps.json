@@ -1,9 +1,6 @@
 {
 	"ImportPath": "github.com/gophergala2016/gophersiesta",
 	"GoVersion": "go1.5",
-	"Packages": [
-		"./..."
-	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
@@ -18,6 +15,10 @@
 		{
 			"ImportPath": "github.com/hashicorp/hcl",
 			"Rev": "578dd9746824a54637686b51a41bad457a56bcef"
+		},
+		{
+			"ImportPath": "github.com/jmhodges/levigo",
+			"Rev": "1ddad808d437abb2b8a55a950ec2616caa88969b"
 		},
 		{
 			"ImportPath": "github.com/kr/pretty",
