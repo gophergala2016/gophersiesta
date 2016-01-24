@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"encoding/json"
+	"regexp"
 )
 
 func GetPlaceHolders(c *gin.Context) {
@@ -82,25 +83,40 @@ func ReplacePlaceholders(s storage.Storage) func (c *gin.Context){
 		name := c.Param("appname")
 		labels := c.DefaultQuery("labels", "default")
 
-		list := make(map[string]string)
-		if strings.Contains(labels, ",") {
+		list := make(map[string]*placeholders.Placeholder)
+
+		myViper, err := readTemplate(name)
+		if err != nil {
+			c.String(http.StatusNotFound, "")
+		} else {
+			properties := placeholders.GetPlaceHolders(myViper)
+			for _, v := range properties.Placeholders {
+				list[v.PropertyName] = v
+			}
+
 			lbls := strings.Split(labels, ",")
 			// MERGE values of different labels, last overrides current value
 			for _, label := range lbls {
 				l := s.GetOptions(name, label)
 				for k, v := range l {
-					list[k] = v
+					if list[k]!=nil {
+						list[k].PropertyValue = v
+					}
 				}
 			}
-		} else {
-			list = s.GetOptions(name, labels)
+
+			filename := myViper.ConfigFileUsed()
+			template := safeFileRead(filename)
+
+			for _, v := range list {
+				re := regexp.MustCompile("\\${" + v.PlaceHolder + ":?([^}]*)}")
+				template = re.ReplaceAllString(template, v.PropertyValue)
+			}
+
+			//myViper.ReadConfig(bytes.NewBuffer(template))
+
+			c.String(http.StatusOK, template)
 		}
 
-		vs := placeholders.CreateValues(list);
-
-		fmt.Println(vs)
-
-		vs_json, _ := json.Marshal(vs)
-		c.String(http.StatusOK, string(vs_json))
 	}
 }
