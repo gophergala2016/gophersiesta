@@ -6,6 +6,7 @@ install:
   - "go build -v ./..."
 deploy:
   provider: heroku
-  api_key: fad6ca13-83b4-4d95-b7a3-64a4f5a5b4d2
+  api_key:
+    secure: CyKuanw+yGuXg25EjDu2HBDVvkIhE0461i5S3kIIloXExF1QoVDn5iAb94ju2bK01SLKtCO6rkCdcYOfwsWLJQZEwk0VRDTLova6G/NpJY5HoxMl1I1E3x9JEgGeEJok07yCltAK7AZb1HAaEfJzeb+nVy3UFrMjcw31TrGtonDmO61oF3kD6ZYzgn18XhzdR4pjzYQCNnzHSQt1JsD9DhTpstxAd9ulbaTLqtgeFCAZ7hnyY8sf9cntvXSM1txHPkTz4ARYy2x1gS1ma2BR2BUd9Vxwi5lczoQgK51YBNPQIrm/IMYtz9rrzW63a9vI0rH2hb4BNAf7fzUQpyobhgiJEdp/DpaZGba0NcC8KI6+OkybwWwhuncW9DlKuzovRjadWIgxZQoQBS5i6f+HWv/wueqXUhSYHBST/ZCcLvXbTuFKc/NC85wqnrmbeibGASubIjZWU+o138s0UQcud2Qh+j3NIcDwiQ6gesi/ZoELTy1p09WedON3d2f8og9wl0L3JgM8fROpKxnPMkJpTB6TNUmkhtyUTECKsJkwggV/pSN20CkPfZrfTtE8u54yY54TqZThv5tYkhLav6eAXU02rrYZxwhZkQ5sR15uRk0EZR+O8H5uJESockS48BFUSY0J81wjFLpBdy39f165SL4lO3rczGKu42WEEZQO4QY=
   app: gophersiesta
   file: gophersiesta

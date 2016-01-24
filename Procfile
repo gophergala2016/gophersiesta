@@ -1,1 +1,1 @@
-web: bin/start-web-server
+web: bin/gophersiesta-server
