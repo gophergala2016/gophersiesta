@@ -1,6 +1,6 @@
 # GOPHERSIESTA
 
-A manager/service for configurations files and properties
+A manager/service for configurations files and properties. GopherSiesta is composed of two parts, a server and an example command line client to communicate with the server's API. The goal of GopherSiesta is to make it easier to manage the configurations of all your services. GopherSiesta client will run prior to your application and fetch the corresponding configuration for your service.
 
 ![alt tag](assets/gopherswrench.jpg)
 
