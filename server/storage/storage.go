@@ -11,14 +11,14 @@ type Storage interface {
 
 
 func CreateSampleData(s Storage){
-	s.SetOption("app1", "prod", "datasource.url", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
-	s.SetOption("app1", "", "datasource.username", "GOPHER")
-	s.SetOption("app1", "dev", "datasource.username", "GOPHER-dev")
-	s.SetOption("app1", "prod", "datasource.username", "GOPHER-prod")
-	s.SetOption("app1", "", "datasource.password", "FOOBAR")
-	s.SetOption("app1", "dev", "datasource.password", "LOREM")
-	s.SetOption("app1", "prod", "datasource.password", "IPSUM")
+	s.SetOption("app1", "prod", "DATASOURCE_URL", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
+	s.SetOption("app1", "", "DATASOURCE_USERNAME", "GOPHER")
+	s.SetOption("app1", "dev", "DATASOURCE_USERNAME", "GOPHER-dev")
+	s.SetOption("app1", "prod", "DATASOURCE_USERNAME", "GOPHER-prod")
+	s.SetOption("app1", "", "DATASOURCE_PASSWORD", "FOOBAR")
+	s.SetOption("app1", "dev", "DATASOURCE_PASSWORD", "LOREM")
+	s.SetOption("app1", "prod", "DATASOURCE_PASSWORD", "IPSUM")
 
-	s.SetOption("app2", "", "datasource.password", "DOCKER-PASS")
-	s.SetOption("app2", "dev", "datasource.password", "DEV-PASS")
+	s.SetOption("app2", "", "DATASOURCE_PASSWORD", "DOCKER-PASS")
+	s.SetOption("app2", "dev", "DATASOURCE_PASSWORD", "DEV-PASS")
 }

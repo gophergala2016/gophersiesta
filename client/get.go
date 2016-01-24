@@ -22,6 +22,11 @@ var getCmd = &cobra.Command{
 			Source += "/"
 		}
 		Url := Source + "conf/" + Appname + "/values"
+
+		if (Label != ""){
+			Url = Url + "?labels=" + Label
+		}
+
 		fmt.Println("[api call] " + Url)
 		res, err := http.Get(Url)
 		if err != nil {
