@@ -29,6 +29,23 @@ cd cmd/gophersiesta-server
 go run main.go
 ```
 
+
+```bash
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET   /                         --> github.com/gophergala2016/gophersiesta/server/handlers.GetHome (3 handlers)
+[GIN-debug] GET   /conf/:appname            --> github.com/gophergala2016/gophersiesta/server/handlers.GetConfig (3 handlers)
+[GIN-debug] GET   /conf/:appname/placeholders --> github.com/gophergala2016/gophersiesta/server/handlers.GetPlaceHolders (3 handlers)
+[GIN-debug] GET   /conf/:appname/values     --> github.com/gophergala2016/gophersiesta/server/handlers.GetValues.func1 (3 handlers)
+[GIN-debug] POST  /conf/:appname/values     --> github.com/gophergala2016/gophersiesta/server/handlers.SetValues.func1 (3 handlers)
+[GIN-debug] GET   /conf/:appname/render/:format --> github.com/gophergala2016/gophersiesta/server/handlers.ReplacePlaceholders.func1 (3 handlers)
+[GIN-debug] GET   /conf/:appname/labels     --> github.com/gophergala2016/gophersiesta/server/handlers.GetLabels.func1 (3 handlers)
+INFO: No PORT environment variable detected, defaulting to 4747
+[GIN-debug] Listening and serving HTTP on :4747
+```
+
 ## API
 
 ### Get template for :appname
