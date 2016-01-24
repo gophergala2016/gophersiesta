@@ -27,11 +27,13 @@ func SendProp(prop string){
 	var err error
 	var res *http.Response
 
-	if Source == "" {
-		Source = "https://gophersiesta.herokuapp.com/"
+	source := Source
+
+	if source == "" {
+		source = "https://gophersiesta.herokuapp.com/"
 	}
-	if Source[len(Source)-1:] != "/" {
-		Source += "/"
+	if source[len(source)-1:] != "/" {
+		source += "/"
 	}
 	Url := Source + "conf/" + Appname + "/values"
 	fmt.Println(Url)

@@ -22,20 +22,21 @@ var getCmd = &cobra.Command{
 
 
 func GetValues() []byte {
-	if Source == "" {
-		Source = "https://gophersiesta.herokuapp.com/"
+	source := Source
+	if source == "" {
+		source = "https://gophersiesta.herokuapp.com/"
 	}
-	if Source[len(Source)-1:] != "/" {
-		Source += "/"
+	if source[len(source)-1:] != "/" {
+		source += "/"
 	}
-	Url := Source + "conf/" + Appname + "/values"
+	url := source + "conf/" + Appname + "/values"
 
 	if (Label != ""){
-		Url = Url + "?labels=" + Label
+		url = url + "?labels=" + Label
 	}
 
-	fmt.Println("[api call] " + Url)
-	res, err := http.Get(Url)
+	fmt.Println("[api call] " + url)
+	res, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}

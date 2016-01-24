@@ -28,38 +28,21 @@ import (
 var renderCmd = &cobra.Command{
 	Use:   "render",
 	Short: "Get the configuration file from config source",
-	Long: `
-
-.      .__                 __
-  _____|__| ____   _______/  |______
- /  ___/  |/ __ \ /  ___/\   __\__  \
- \___ \|  \  ___/ \___ \  |  |  / __ \_
-/____  >__|\___  >____  > |__| (____  /
-     \/        \/     \/            \/
-
-Fetch configuration files for a given <label>.
+	Long: `Fetch configuration files for a given <label>.
 Fetched from source url.`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if Source == "" {
-			Source = "https://gophersiesta.herokuapp.com/"
+		source := Source
+		if source == "" {
+			source = "https://gophersiesta.herokuapp.com/"
 		}
-		if Source[len(Source)-1:] != "/" {
-			Source += "/"
+		if source[len(source)-1:] != "/" {
+			source += "/"
 		}
 
-		fmt.Println("Source " + Source)
-		/*
-			err := checkArgs()
-			if err != nil {
-				log.Fatal(err)
-			}
-		*/
-		// https://gophersiesta.herokuapp.com/conf/app1/
-		Url := Source + "/conf/" + Appname
-		fmt.Println(Url)
+		url := source + "/conf/" + Appname
+		fmt.Println(url)
 
-		res, err := http.Get(Url)
+		res, err := http.Get(url)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -79,22 +62,7 @@ var Label string
 func init() {
 	RootCmd.AddCommand(renderCmd)
 
-	/*	aError := make([]error, 2)
-		if err := renderCmd.MarkFlagRequired("appname") ; err != nil {
-			aError[0] = err
-			log.Printf(" -> %q\n", err)
-		}
-
-		if err := renderCmd.MarkFlagRequired("source") ; err != nil {
-			aError[1] = err
-			log.Printf(" -> %q\n", err)
-		}*/
 	renderCmd.Flags().StringVarP(&Appname, "appname", "a", "", "Application name")
 	renderCmd.Flags().StringVarP(&Source, "source", "s", "", "Source directory to read from")
 	renderCmd.Flags().StringVarP(&Label, "label", "l", "", "Select label to be fetch")
-
-	/*if len(aError)>0 {
-		os.Exit(-1)
-	}*/
-
 }

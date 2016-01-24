@@ -61,13 +61,14 @@ func getPlaceholders() {
 func readPlaceHolders() (*placeholders.Placeholders, error) {
 	pls := &placeholders.Placeholders{}
 
-	if Source == "" {
-		Source = "https://gophersiesta.herokuapp.com/"
+	source := Source
+	if source == "" {
+		source = "https://gophersiesta.herokuapp.com/"
 	}
-	if Source[len(Source)-1:] != "/" {
-		Source += "/"
+	if source[len(source)-1:] != "/" {
+		source += "/"
 	}
-	url := Source + "conf/" + Appname + "/placeholders"
+	url := source + "conf/" + Appname + "/placeholders"
 
 	if Label != "" {
 		url = url + "?labels=" + Label
