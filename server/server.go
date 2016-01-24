@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 	"github.com/gophergala2016/gophersiesta/server/storage"
-	"github.com/gophergala2016/gophersiesta/server/properties"
+	"github.com/gophergala2016/gophersiesta/server/placeholders"
 )
 
 var storage server.Storage
@@ -53,7 +53,7 @@ func StartServer() *Server {
 		if err != nil {
 			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 		} else {
-			properties := properties.GetPlaceHolders(myViper)
+			properties := placeholders.GetPlaceHolders(myViper)
 			propsJson, _ := json.Marshal(properties)
 			c.String(http.StatusOK, string(propsJson))
 		}
