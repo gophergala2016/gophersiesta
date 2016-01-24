@@ -32,6 +32,14 @@ Retrieve the full template file for the application.
 ```
 GET http://gophersiesta.herokuapp.com/conf/app1
 
+application:
+    name: "App1"
+    version: 0.0.1
+
+datasource:
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3306/shcema?profileSQL=true} # has default value
+    username: ${DATASOURCE_USERNAME} # has no default value. If no value is passed should producer error if validated
+    password: ${DATASOURCE_PASSWORD}
 ```
 
 
