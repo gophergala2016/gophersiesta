@@ -8,6 +8,7 @@ import (
 	"github.com/gophergala2016/gophersiesta/server/storage"
 	"fmt"
 	"io/ioutil"
+	"encoding/json"
 )
 
 func GetPlaceHolders(c *gin.Context) {
