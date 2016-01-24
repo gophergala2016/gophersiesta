@@ -1,6 +1,6 @@
 package server
 import (
-	"github.com/jmhodges/levigo"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/jmhodges/levigo"
 	"log"
 	"fmt"
 )
