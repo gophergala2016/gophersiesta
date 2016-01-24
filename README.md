@@ -18,7 +18,7 @@ Currently the values for the placeholders for a given set of labels can be store
 As the project uses [godep](https://github.com/tools/godep) to make builds reproducibly
 
 ```
-go get github.com/gophergala2016/gophersiesta
+    go get github.com/gophergala2016/gophersiesta
 ```
 
 ## Run
@@ -38,7 +38,7 @@ http://gophersiesta.herokuapp.com/conf/:appname
 Retrieve the full template file for the application.
 
 *Example*
-```
+```yaml
 GET http://gophersiesta.herokuapp.com/conf/app1
 
 application:
@@ -61,7 +61,7 @@ http://gophersiesta.herokuapp.com/conf/:appname/placeholders
 
 *Example*
 
-```
+```json
 GET http://gophersiesta.herokuapp.com/conf/app1/placeholders
 {
   "placeholders": [
@@ -93,7 +93,7 @@ http://gophersiesta.herokuapp.com/conf/:appname/values?labels=:label1,:label2
 
 
 *Example*
-```
+```json
 GET http://gophersiesta.herokuapp.com/conf/app1/values
 {
     "values": [
@@ -185,7 +185,7 @@ http://gophersiesta.herokuapp.com/conf/:appname/labels
 
 *Example*
 
-```
+```json
 GET http://gophersiesta.herokuapp.com/conf/app1/labels
 {
   "labels": [
@@ -205,7 +205,7 @@ http://gophersiesta.herokuapp.com/conf/:appname/render/yml
 
 *Example*
 
-```
+```yaml
 http://gophersiesta.herokuapp.com/conf/app1/render/yml
 application:
   name: App1
@@ -214,7 +214,9 @@ datasource:
   password: FOOBAR
   url: jdbc:mysql://localhost:3306/shcema?profileSQL=true
   username: GOPHER
-  
+```
+
+```yaml
 GET http://gophersiesta.herokuapp.com/conf/app1/render/yml?labels=dev 
 application:
   name: App1
@@ -223,7 +225,9 @@ datasource:
   password: dev_password
   url: dev_url
   username: dev_user
-  
+```
+
+```yaml
 GET http://gophersiesta.herokuapp.com/conf/app1/render/yml?labels=prod 
 application:
   name: App1
