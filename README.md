@@ -274,7 +274,7 @@ In this gif you can see:
 
 ### Render the final config file
 
-![alt tag](assets/gophersiesta-cli-recording-2.gif)
+![alt tag](assets/gophersiesta-cli-recording-3.gif)
 
 In this gif you can see:
 
