@@ -11,6 +11,7 @@ import (
 	"strings"
 	"github.com/gophergala2016/gophersiesta/server/storage"
 	"github.com/gophergala2016/gophersiesta/server/placeholders"
+	"fmt"
 )
 
 var storage server.Storage
@@ -23,7 +24,6 @@ type Server struct {
 func StartServer() *Server {
 
 	storage = &server.BoltDb{} // RAM
-	//storage = &server.LevelDB{"db/options", nil, nil, nil} // LevelDB
 
 	storage.Init()
 
@@ -84,6 +84,34 @@ func StartServer() *Server {
 		c.String(http.StatusOK, string(vs_json))
 	})
 
+	// Return list of set values
+	server.POST("/conf/:appname/values", func(c *gin.Context) {
+		name := c.Param("appname")
+		labels := c.DefaultQuery("labels", "default")
+
+		body := c.Request.Body
+		x, err := ioutil.ReadAll(body)
+
+		if err!=nil {
+			c.String(http.StatusBadRequest, "Bad request")
+		} else {
+
+			data := map[string]interface{}{}
+			json.Unmarshal(x, &data)
+
+			lbls := strings.Split(labels, ",")
+			for _, label := range lbls {
+				for k, v := range data {
+					storage.SetOption(name, label, k, fmt.Sprint(v))
+				}
+			}
+
+
+			c.String(http.StatusOK, "Ok")
+		}
+
+	})
+
 	server.Run(getPort())
 
 	return server
@@ -119,3 +147,9 @@ func safeFileRead(filename string) string {
 	return string(fileContent)
 }
 
+
+/*func readJSON(str string) map[string]string {
+	data := map[string]interface{}{}
+	json.Unmarshal(dataStream, &data)
+	return
+}*/
