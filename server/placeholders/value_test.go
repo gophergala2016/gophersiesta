@@ -40,7 +40,7 @@ func checkValue(vs *Values, key string, value string, t *testing.T) {
 	}
 
 	if v.Value != value {
-		t.Fatal(fmt.Errorf("The value for key %s is %s and not the expected one", key, v.Value, value))
+		t.Fatal(fmt.Errorf("The value for key %s is %s and not the expected one %s", key, v.Value, value))
 	}
 }
 

@@ -1,5 +1,7 @@
 package storage
 
+
+// Storage exposes a group off operations to work with placehodlers values
 type Storage interface {
 	Init()
 	GetLabels(appname string) []string
@@ -9,6 +11,8 @@ type Storage interface {
 	Close()
 }
 
+
+// CreateSampleData insert a set off sample data into the storage
 func CreateSampleData(s Storage) {
 	s.SetOption("app1", "prod", "DATASOURCE_URL", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
 	s.SetOption("app1", "", "DATASOURCE_USERNAME", "GOPHER")

@@ -14,10 +14,12 @@ import (
 	"strings"
 )
 
+// Labels is a collection of labels that can be associated with the values of the placeholders
 type Labels struct {
 	Labels []string `json:"labels"`
 }
 
+// GetConfig return the configuration file for a given appname
 func GetConfig(c *gin.Context) {
 	name := c.Param("appname")
 	myViper, err := readTemplate(name)
@@ -38,6 +40,8 @@ func GetConfig(c *gin.Context) {
 	}
 }
 
+
+// GetLabels return the stored labels for a given appname
 func GetLabels(s storage.Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 

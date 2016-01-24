@@ -10,11 +10,13 @@ import (
 
 var db storage.Storage
 
+// Server is responsible for holding the config storage and the http engine to route the request
 type Server struct {
 	Storage storage.Storage
 	*gin.Engine
 }
 
+// StartServer creates the storage and configures the routes
 func StartServer() *Server {
 
 	db = &storage.BoltDb{} // RAM

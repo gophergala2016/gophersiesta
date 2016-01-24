@@ -24,8 +24,8 @@ import (
 
 var cfgFile string
 
-// This represents the base command when called without any subcommands
-var RootCmd = &cobra.Command{
+// RootCmd This represents the base command when called without any subcommands
+var rootCmd = &cobra.Command{
 	Use:   "gophersiesta",
 	Short: "gophersiesta-client",
 	Long: `
@@ -41,10 +41,15 @@ var RootCmd = &cobra.Command{
 	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
+var properties string
+var appName string
+var source string
+var label string
+
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}

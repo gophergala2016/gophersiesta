@@ -15,6 +15,7 @@ import (
 	"strings"
 )
 
+// GetPlaceHolders return the placeholders that are present in the appname config file
 func GetPlaceHolders(c *gin.Context) {
 	name := c.Param("appname")
 	myViper, err := readTemplate(name)
@@ -26,6 +27,8 @@ func GetPlaceHolders(c *gin.Context) {
 	}
 }
 
+// GetValues return the placeholders values for a given appname and concrete namespace represented as labels.
+// If no labels are provided the "default" label is used
 func GetValues(s storage.Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		name := c.Param("appname")
@@ -51,6 +54,8 @@ func GetValues(s storage.Storage) func(c *gin.Context) {
 	}
 }
 
+// SetValues set the placeholders values for a given appname and concrete namespace represented as labels
+// If no labels are provided the "default" label is used
 func SetValues(s storage.Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		name := c.Param("appname")
@@ -92,6 +97,8 @@ func SetValues(s storage.Storage) func(c *gin.Context) {
 	}
 }
 
+// ReplacePlaceholders generated a config file using the base config file for appname by replacing the possible placeholders
+// that the config fiel might have given a group of labels. These labels are used to retrieve the placeholders stored values
 func ReplacePlaceholders(s storage.Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		name := c.Param("appname")

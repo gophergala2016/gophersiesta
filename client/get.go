@@ -19,19 +19,19 @@ var getCmd = &cobra.Command{
 		fmt.Println(string(body))
 	},
 }
-
+// GetValues return the raw response from the server calling http://url/conf/:appname/values
 func GetValues() []byte {
-	source := Source
+
 	if source == "" {
 		source = "https://gophersiesta.herokuapp.com/"
 	}
 	if source[len(source)-1:] != "/" {
 		source += "/"
 	}
-	url := source + "conf/" + Appname + "/values"
+	url := source + "conf/" + appName + "/values"
 
-	if Label != "" {
-		url = url + "?labels=" + Label
+	if label != "" {
+		url = url + "?labels=" + label
 	}
 
 	fmt.Println("[api call] " + url)
@@ -44,21 +44,12 @@ func GetValues() []byte {
 
 	return body
 }
+
 func init() {
-	RootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(getCmd)
 
-	//aError := make([]error, 2)
-	/*if err := renderCmd.MarkFlagRequired(Appname) ; err != nil {
-		aError[0] = err
-		log.Printf(" -> %q\n", err)
-	}*/
-
-	getCmd.Flags().StringVarP(&Appname, "appname", "a", "", "Application name")
-	getCmd.Flags().StringVarP(&Source, "source", "s", "https://gophersiesta.herokuapp.com/", "Source directory to read from")
-	getCmd.Flags().StringVarP(&Label, "label", "l", "", "Select label to be fetch")
-
-	/*if len(aError)>0 {
-		os.Exit(-1)
-	}*/
+	getCmd.Flags().StringVarP(&appName, "appname", "a", "", "Application name")
+	getCmd.Flags().StringVarP(&source, "source", "s", "https://gophersiesta.herokuapp.com/", "Source directory to read from")
+	getCmd.Flags().StringVarP(&label, "label", "l", "", "Select label to be fetch")
 
 }

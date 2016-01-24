@@ -6,12 +6,15 @@ import (
 	"strings"
 )
 
+
+// Placeholder groups the basic information to work with placeholders
 type Placeholder struct { // ${DATASOURCE_URL:jdbc:mysql://localhost:3306/shcema?profileSQL=true}
 	PropertyName  string `json:"property_name"`  // the full path to the property datasource.url
 	PropertyValue string `json:"property_value"` // jdbc:mysql://localhost:3306/shcema?profileSQL=true
 	PlaceHolder   string `json:"placeholder"`    // DATASOURCE_URL
 }
 
+// Placeholders is a collection of Placeholder
 type Placeholders struct {
 	Placeholders []*Placeholder `json:"placeholders"`
 }
@@ -25,7 +28,7 @@ func GetPlaceHolders(conf *viper.Viper) Placeholders {
 	return Placeholders{properties}
 }
 
-// CreatePropertiesGiven transform the propsMap into a Property struct slice
+// CreateProperties transform the propsMap into a Property struct slice
 func CreateProperties(propsMap map[string]string) []*Placeholder {
 	count := len(propsMap)
 

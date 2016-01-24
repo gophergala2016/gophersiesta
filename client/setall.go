@@ -59,16 +59,15 @@ func getPlaceholders() {
 func readPlaceHolders() (*placeholders.Placeholders, error) {
 	pls := &placeholders.Placeholders{}
 
-	source := Source
 	if source == "" {
 		source = "https://gophersiesta.herokuapp.com/"
 	}
 	if source[len(source)-1:] != "/" {
 		source += "/"
 	}
-	url := source + "conf/" + Appname + "/placeholders"
+	url := source + "conf/" + appName + "/placeholders"
 
-	label := Label
+	label := label
 	if label != "" {
 		url = url + "?labels=" + label
 	}
@@ -132,15 +131,15 @@ func setPropertyHolderValue(p *placeholders.Placeholder, currentVal string) {
 		buff.WriteString("=")
 		buff.WriteString(value)
 
-		SendProp(string(buff.Bytes()), Label)
+		SendProp(string(buff.Bytes()), label)
 	}
 }
 
 func init() {
-	RootCmd.AddCommand(setAllCmd)
+	rootCmd.AddCommand(setAllCmd)
 
-	setAllCmd.Flags().StringVarP(&Appname, "appname", "a", "", "Application name")
-	setAllCmd.Flags().StringVarP(&Source, "source", "s", "https://gophersiesta.herokuapp.com/", "Source directory to read from")
-	setAllCmd.Flags().StringVarP(&Label, "label", "l", "", "Select label to be fetch")
+	setAllCmd.Flags().StringVarP(&appName, "appname", "a", "", "Application name")
+	setAllCmd.Flags().StringVarP(&source, "source", "s", "https://gophersiesta.herokuapp.com/", "Source directory to read from")
+	setAllCmd.Flags().StringVarP(&label, "label", "l", "", "Select label to be fetch")
 
 }

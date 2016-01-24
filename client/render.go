@@ -31,7 +31,7 @@ var renderCmd = &cobra.Command{
 	Long: `Fetch configuration files for a given <label>.
 Fetched from source url.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		source := Source
+
 		if source == "" {
 			source = "https://gophersiesta.herokuapp.com/"
 		}
@@ -39,10 +39,10 @@ Fetched from source url.`,
 			source += "/"
 		}
 
-		url := source + "conf/" + Appname + "/render/yml"
+		url := source + "conf/" + appName + "/render/yml"
 
-		if Label != "" {
-			url = url + "?labels=" + Label
+		if label != "" {
+			url = url + "?labels=" + label
 		}
 
 		fmt.Println(url)
@@ -60,14 +60,10 @@ Fetched from source url.`,
 	},
 }
 
-var Appname string
-var Source string
-var Label string
-
 func init() {
-	RootCmd.AddCommand(renderCmd)
+	rootCmd.AddCommand(renderCmd)
 
-	renderCmd.Flags().StringVarP(&Appname, "appname", "a", "", "Application name")
-	renderCmd.Flags().StringVarP(&Source, "source", "s", "", "Source directory to read from")
-	renderCmd.Flags().StringVarP(&Label, "label", "l", "", "Select label to be fetch")
+	renderCmd.Flags().StringVarP(&appName, "appname", "a", "", "Application name")
+	renderCmd.Flags().StringVarP(&source, "source", "s", "", "Source directory to read from")
+	renderCmd.Flags().StringVarP(&label, "label", "l", "", "Select label to be fetch")
 }

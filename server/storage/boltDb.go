@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// BoltDb holds the properties for working with kind of storage
 type BoltDb struct {
 	Path             string
 	Name             string
@@ -16,6 +17,9 @@ type BoltDb struct {
 	*bolt.DB
 }
 
+// Init creates the boltDB file and initializes the buckets:
+// - Properties
+// - Labels
 func (s *BoltDb) Init() {
 
 	s.Name = "gophersiesta.DB"
@@ -43,6 +47,7 @@ func (s *BoltDb) Init() {
 	})
 }
 
+// GetLabels return all labels for a given appname
 func (s *BoltDb) GetLabels(appName string) []string {
 	lbls := make([]string, 0)
 
@@ -72,6 +77,7 @@ func (s *BoltDb) GetLabels(appName string) []string {
 	return lbls
 }
 
+// SetOption stores a placeholders value for a given appname, and label in the storage engine
 func (s *BoltDb) SetOption(appName string, label string, variable string, value string) {
 
 	s.Update(func(tx *bolt.Tx) error {
@@ -89,6 +95,7 @@ func (s *BoltDb) SetOption(appName string, label string, variable string, value 
 
 }
 
+// GetOption returns a placeholders value for a given appname, and label in the storage engine
 func (s *BoltDb) GetOption(appName string, label string, variable string) string {
 
 	var value string
@@ -159,6 +166,7 @@ func parseLabelKey(v []byte) (appName string, label string, err error) {
 	return appName, label, fmt.Errorf("value is nil")
 }
 
+// GetOptions returns a map of placeholders value for a given appname, and label in the storage engine
 func (s *BoltDb) GetOptions(appName, label string) map[string]string {
 
 	props := make(map[string]string)
@@ -207,6 +215,8 @@ func getLabelKey(appName string, label string) []byte {
 	return []byte(fmt.Sprintf("%s-%s", appName, getLabel(label)))
 }
 
+
+// Close shutdowns the storage
 func (s *BoltDb) Close() {
 	s.Close()
 }

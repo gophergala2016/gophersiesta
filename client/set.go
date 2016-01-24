@@ -18,15 +18,14 @@ var setCmd = &cobra.Command{
 	Long:  "Set all the values to be setup. From appname + label",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		SendProp(Properties, Label)
+		SendProp(properties, label)
 	},
 }
 
+// SendProp send the prop to the config service for the namespace label
 func SendProp(prop string, label string) {
 	var err error
 	var res *http.Response
-
-	source := Source
 
 	if source == "" {
 		source = "https://gophersiesta.herokuapp.com/"
@@ -34,7 +33,7 @@ func SendProp(prop string, label string) {
 	if source[len(source)-1:] != "/" {
 		source += "/"
 	}
-	url := Source + "conf/" + Appname + "/values"
+	url := source + "conf/" + appName + "/values"
 
 	if label != "" {
 		url = url + "?labels=" + label
@@ -64,14 +63,13 @@ func SendProp(prop string, label string) {
 	fmt.Println(data)
 }
 
-var Properties string
 
 func init() {
-	RootCmd.AddCommand(setCmd)
+	rootCmd.AddCommand(setCmd)
 
-	setCmd.Flags().StringVarP(&Appname, "appname", "a", "", "Application name")
-	setCmd.Flags().StringVarP(&Source, "source", "s", "https://gophersiesta.herokuapp.com/", "Source directory to read from")
-	setCmd.Flags().StringVarP(&Label, "label", "l", "", "Select label to be fetch")
-	setCmd.Flags().StringVarP(&Properties, "properties", "p", "", "json encoded properties")
+	setCmd.Flags().StringVarP(&appName, "appname", "a", "", "Application name")
+	setCmd.Flags().StringVarP(&source, "source", "s", "https://gophersiesta.herokuapp.com/", "Source directory to read from")
+	setCmd.Flags().StringVarP(&label, "label", "l", "", "Select label to be fetch")
+	setCmd.Flags().StringVarP(&properties, "properties", "p", "", "json encoded properties")
 
 }
