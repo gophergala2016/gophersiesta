@@ -29,6 +29,8 @@ func StartServer() *Server {
 
 	server := &Server{db, router}
 
+	server.GET("/", handlers.GetHome)
+
 	// This handler will match /conf/appname but will not match neither /conf/ or /conf
 	server.GET("/conf/:appname", handlers.GetConfig)
 
@@ -51,6 +53,8 @@ func StartServer() *Server {
 
 	return server
 }
+
+
 
 func getPort() string {
 	var port = os.Getenv("PORT")
