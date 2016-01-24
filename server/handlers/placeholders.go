@@ -1,20 +1,18 @@
 package handlers
 
 import (
-	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	"net/http"
-	"github.com/gophergala2016/gophersiesta/server/placeholders"
-	"strings"
-	"github.com/gophergala2016/gophersiesta/server/storage"
-	"fmt"
-	"io/ioutil"
-	"encoding/json"
-	"regexp"
 	"bytes"
-	"github.com/BurntSushi/toml"
-	"gopkg.in/yaml.v2"
+	"encoding/json"
+	"fmt"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/BurntSushi/toml"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
-	"path/filepath"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/gopkg.in/yaml.v2"
+	"github.com/gophergala2016/gophersiesta/server/placeholders"
+	"github.com/gophergala2016/gophersiesta/server/storage"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 func GetPlaceHolders(c *gin.Context) {
@@ -47,14 +45,13 @@ func GetValues(s storage.Storage) func(c *gin.Context) {
 			list = s.GetOptions(name, labels)
 		}
 
-		vs := placeholders.CreateValues(list);
+		vs := placeholders.CreateValues(list)
 
 		c.IndentedJSON(http.StatusOK, vs)
 	}
 }
 
-
-func SetValues(s storage.Storage) func (c *gin.Context) {
+func SetValues(s storage.Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		name := c.Param("appname")
 		labels := c.DefaultQuery("labels", "default")
@@ -70,7 +67,7 @@ func SetValues(s storage.Storage) func (c *gin.Context) {
 			json.Unmarshal(x, &data)
 
 			lbls := strings.Split(labels, ",")
-			if len(data)>0 { //it's a JSON
+			if len(data) > 0 { //it's a JSON
 				for _, label := range lbls {
 					for k, v := range data {
 						s.SetOption(name, label, k, fmt.Sprint(v))
@@ -90,14 +87,13 @@ func SetValues(s storage.Storage) func (c *gin.Context) {
 				c.String(http.StatusBadRequest, "Properties not well-formed")
 			}
 
-
 		}
 
 	}
 }
 
-func ReplacePlaceholders(s storage.Storage) func (c *gin.Context){
-	return func (c *gin.Context) {
+func ReplacePlaceholders(s storage.Storage) func(c *gin.Context) {
+	return func(c *gin.Context) {
 		name := c.Param("appname")
 		labels := c.DefaultQuery("labels", "default")
 		renderType := c.Param("format")
@@ -110,7 +106,7 @@ func ReplacePlaceholders(s storage.Storage) func (c *gin.Context){
 		} else {
 			properties := placeholders.GetPlaceHolders(myViper)
 			for _, v := range properties.Placeholders {
-				list[v.PropertyName] = v
+				list[v.PlaceHolder] = v
 			}
 
 			lbls := strings.Split(labels, ",")
@@ -118,32 +114,28 @@ func ReplacePlaceholders(s storage.Storage) func (c *gin.Context){
 			for _, label := range lbls {
 				l := s.GetOptions(name, label)
 				for k, v := range l {
-					if list[k]!=nil {
+					if list[k] != nil {
 						list[k].PropertyValue = v
 					}
 				}
 			}
 
-			filename := myViper.ConfigFileUsed()
-			template := safeFileRead(filename)
+			template := replaceTemplatePlaceHolders(myViper, list)
 
-			for _, v := range list {
-				re := regexp.MustCompile("\\${" + v.PlaceHolder + ":?([^}]*)}")
-				template = re.ReplaceAllString(template, v.PropertyValue)
-			}
+			extension := getFileExtension(myViper)
 
-			replacedViper :=  viper.New()
-			extension := filepath.Ext(filename)
-
-			extension = strings.Replace(extension, ".", "", 1)
-
+			replacedViper := viper.New()
 			replacedViper.SetConfigType(extension)
 			replacedViper.ReadConfig(bytes.NewBuffer([]byte(template)))
-			b , err := render(replacedViper, renderType)
+
+			b, err := render(replacedViper, renderType)
 
 			if err == nil {
 				c.Data(http.StatusOK, "text/plain", b)
-			}else{
+			}
+
+			if err != nil {
+
 				c.String(http.StatusInternalServerError, "Could not render %s", err)
 			}
 		}
@@ -151,12 +143,11 @@ func ReplacePlaceholders(s storage.Storage) func (c *gin.Context){
 	}
 }
 
-
 func render(v *viper.Viper, configOutputType string) ([]byte, error) {
 
 	var b []byte
 	var err error
-	var conf  = make(map[string]interface{})
+	var conf = make(map[string]interface{})
 
 	m := v.AllSettings()
 

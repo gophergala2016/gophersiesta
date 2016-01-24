@@ -7,6 +7,11 @@ import (
 	"github.com/gophergala2016/gophersiesta/server/storage"
 	"os"
 	"io"
+	"path/filepath"
+	"strings"
+	"github.com/gophergala2016/gophersiesta/server/placeholders"
+	"regexp"
+	"io/ioutil"
 )
 
 
@@ -66,4 +71,44 @@ func fileReader(filename string) (io.Reader, error) {
 	}
 
 	return file, errFile
+}
+
+func getFileExtension(v *viper.Viper) string {
+	filename := v.ConfigFileUsed()
+	extension := filepath.Ext(filename)
+
+	extension = strings.Replace(extension, ".", "", 1)
+
+	return extension
+}
+
+func readConfigFile(v *viper.Viper) string {
+
+	filename := v.ConfigFileUsed()
+
+	r, err := fileReader(filename)
+
+	if err != nil{
+		return ""
+	}
+
+	configFile, err := ioutil.ReadAll(r)
+
+	if err != nil{
+		return ""
+	}
+
+	return string(configFile)
+}
+
+func replaceTemplatePlaceHolders(v *viper.Viper, list map[string]*placeholders.Placeholder) string {
+
+	template := readConfigFile(v)
+
+	for _, v := range list {
+		re := regexp.MustCompile("\\${" + v.PlaceHolder + ":?([^}]*)}")
+		template = re.ReplaceAllString(template, v.PropertyValue)
+	}
+
+	return template
 }
