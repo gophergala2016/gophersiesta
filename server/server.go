@@ -27,8 +27,8 @@ type Properties struct {
 
 func StartServer() {
 
-	//storage = &server.Ethereal{} // RAM
-	storage = &server.LevelDB{"db/options", nil, nil, nil} // LevelDB
+	storage = &server.Ethereal{} // RAM
+	//storage = &server.LevelDB{"db/options", nil, nil, nil} // LevelDB
 
 	storage.Init()
 
