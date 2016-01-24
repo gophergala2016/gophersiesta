@@ -21,7 +21,6 @@ func GetConfig(c *gin.Context) {
 	} else {
 		filename := myViper.ConfigFileUsed()
 		c.String(http.StatusOK, safeFileRead(filename)+"\n")
-
 	}
 }
 
