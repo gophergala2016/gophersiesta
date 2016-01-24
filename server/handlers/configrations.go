@@ -5,7 +5,13 @@ import (
 	"net/http"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
 	"io/ioutil"
+	"github.com/gophergala2016/gophersiesta/server/storage"
 )
+
+
+type Labels struct {
+	Labels []string `json:"labels"`
+}
 
 func GetConfig(c *gin.Context) {
 	name := c.Param("appname")
@@ -19,6 +25,18 @@ func GetConfig(c *gin.Context) {
 	}
 }
 
+func GetLabels(s storage.Storage) func (c *gin.Context){
+	return func (c *gin.Context) {
+
+		name := c.Param("appname")
+
+		lbls := s.GetLabels(name)
+
+		labels := &Labels{lbls}
+
+		c.IndentedJSON(http.StatusOK, labels)
+	}
+}
 
 func readTemplate(appname string) (*viper.Viper, error) {
 

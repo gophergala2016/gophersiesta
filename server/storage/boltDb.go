@@ -11,6 +11,7 @@ type BoltDb struct {
 	Path string
 	Name string
 	PropsBucketName []byte
+	LabelsBucketName []byte
 		 *bolt.DB
 }
 
@@ -18,6 +19,8 @@ func (s *BoltDb) Init() {
 
 	s.Name = "gophersiesta.DB"
 	s.PropsBucketName = []byte("props")
+	s.LabelsBucketName = []byte("labels")
+
 	db, err := bolt.Open(s.Name, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -30,8 +33,43 @@ func (s *BoltDb) Init() {
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)
 		}
+
+		_, err = tx.CreateBucketIfNotExists(s.LabelsBucketName)
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
 		return nil
 	})
+}
+
+func (s *BoltDb) GetLabels(appName string) []string{
+	lbls := make([]string, 0)
+
+	prefix := []byte(appName)
+
+	s.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket(s.LabelsBucketName)
+
+		c := b.Cursor()
+
+		for k, v := c.Seek(prefix); bytes.HasPrefix(k, prefix); k, v = c.Next() {
+
+			_, _, err := parseLabelKey(k)
+
+			if (err != nil){
+				log.Print(err)
+			}else{
+				lbls = append(lbls, parseValue(v))
+			}
+
+
+		}
+
+		return nil
+	})
+
+	return lbls
 }
 
 func (s *BoltDb) SetOption(appName string, label string, variable string, value string) {
@@ -40,10 +78,14 @@ func (s *BoltDb) SetOption(appName string, label string, variable string, value 
 
 	s.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(s.PropsBucketName)
+		bl := tx.Bucket(s.LabelsBucketName)
 
-		k := getKey(appName, label, variable)
+		k := getPropertyKey(appName, label, variable)
+		lk := getLabelKey(appName, label)
 
 		err := b.Put(k, []byte(value))
+		err = bl.Put(lk, []byte(getLabel(label)))
+
 		return err
 	})
 
@@ -55,7 +97,7 @@ func (s *BoltDb) GetOption(appName string, label string, variable string) string
 	s.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(s.PropsBucketName)
 
-		k := getKey(appName, label, variable)
+		k := getPropertyKey(appName, label, variable)
 
 		v := b.Get(k)
 
@@ -79,7 +121,7 @@ func parseValue(v []byte) string {
 }
 
 
-func parseKey(v []byte) (appName string, label string, variable string, err error) {
+func parsePropertyKey(v []byte) (appName string, label string, variable string, err error) {
 
 	if v != nil{
 		k := string(v[:len(v)])
@@ -87,7 +129,7 @@ func parseKey(v []byte) (appName string, label string, variable string, err erro
 		parts := strings.Split(k, "-")
 
 		if (len(parts) != 3){
-			return appName, label, variable, fmt.Errorf("The key is not structured like appName-labels-variable")
+			return appName, label, variable, fmt.Errorf("The key is not structured like appName-labels-variable\n")
 		}
 
 		appName = parts[0]
@@ -100,11 +142,32 @@ func parseKey(v []byte) (appName string, label string, variable string, err erro
 	return appName, label, variable, fmt.Errorf("value is nil")
 }
 
+
+func parseLabelKey(v []byte) (appName string, label string, err error) {
+
+	if v != nil{
+		k := string(v[:len(v)])
+
+		parts := strings.Split(k, "-")
+
+		if (len(parts) != 2){
+			return appName, label, fmt.Errorf("The key %s is not structured like appName-labels\n", k)
+		}
+
+		appName = parts[0]
+		label = parts[1]
+
+		return appName, label, nil
+	}
+
+	return appName, label, fmt.Errorf("value is nil")
+}
+
 func (s *BoltDb) GetOptions(appName, label string) map[string]string {
 
 	props := make(map[string]string)
 
-	prefix := []byte(fmt.Sprintf("%s-%s", appName, label))
+	prefix := getLabelKey(appName, label)
 
 	s.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
@@ -114,13 +177,14 @@ func (s *BoltDb) GetOptions(appName, label string) map[string]string {
 
 		for k, v := c.Seek(prefix); bytes.HasPrefix(k, prefix); k, v = c.Next() {
 
-			_, _, variable, err := parseKey(k)
+			_, _, variable, err := parsePropertyKey(k)
 
 			if (err != nil){
 				log.Print(err)
+			}else{
+				props[variable] = parseValue(v)
 			}
 
-			props[variable] = parseValue(v)
 
 		}
 
@@ -130,13 +194,22 @@ func (s *BoltDb) GetOptions(appName, label string) map[string]string {
 	return props
 }
 
-func getKey(appName string, label string, variable string) []byte {
-
+func getLabel(label string) string {
 	if label == "" {
 		label = "default"
 	}
 
-	return []byte(fmt.Sprintf("%s-%s-%s", appName, label, variable))
+	return label
+}
+
+func getPropertyKey(appName string, label string, variable string) []byte {
+
+	return []byte(fmt.Sprintf("%s-%s-%s", appName, getLabel(label), variable))
+}
+
+func getLabelKey(appName string, label string) []byte {
+
+	return []byte(fmt.Sprintf("%s-%s", appName, getLabel(label)))
 }
 
 

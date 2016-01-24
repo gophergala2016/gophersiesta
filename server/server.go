@@ -37,6 +37,9 @@ func StartServer() *Server {
 	// Return list of set values
 	server.GET("/conf/:appname/values", handlers.GetValues(db))
 
+	// Return list of set values
+	server.GET("/conf/:appname/labels", handlers.GetLabels(db))
+
 	server.Run(getPort())
 
 	return server
