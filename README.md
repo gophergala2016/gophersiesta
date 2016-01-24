@@ -1,6 +1,15 @@
 # GOPHERSIESTA
 
-A manager/service for configurations files and properties. GopherSiesta is composed of two parts, a server and an example command line client to communicate with the server's API. The goal of GopherSiesta is to make it easier to manage the configurations of all your services. GopherSiesta client will run prior to your application and fetch the corresponding configuration for your service.
+A manager/service for configurations files, properties placeholders and their values separated by application and namespaces.
+GopherSiesta is composed of two parts, a server and an example command line client to communicate with the server's API.
+
+The goal of GopherSiesta is to make it easier to manage the configurations of all your services following the [12 factor app](http://12factor.net/config) best practices. GopherSiesta client will run prior to your application and fetch the corresponding configuration for your service.
+
+Currently the values for the placeholders for a given set of labels can be stored in:
+
++ Persisted [bolt DB](https://github.com/boltdb/bolt)
++ Volatile map
+
 
 ![alt tag](assets/gopherswrench.jpg)
 
@@ -15,7 +24,7 @@ go get github.com/gophergala2016/gophersiesta
 ## Run
 
 ```
-cd cmd/start-we-server
+cd cmd/gophersiesta-server
 
 go run main.go
 ```
@@ -87,45 +96,85 @@ http://gophersiesta.herokuapp.com/conf/:appname/values?labels=:label1,:label2
 ```
 GET http://gophersiesta.herokuapp.com/conf/app1/values
 {
-  "values": [
-    {
-      "value": "FOOBAR",
-      "name": "datasource.password"
-    },
-    {
-      "value": "GOPHER",
-      "name": "datasource.username"
-    }
-  ]
+    "values": [
+        {
+            "name": "DATASOURCE_PASSWORD",
+            "value": "FOOBAR"
+        },
+        {
+            "name": "DATASOURCE_USERNAME",
+            "value": "GOPHER"
+        }
+    ]
 }
 
 GET http://gophersiesta.herokuapp.com/conf/app1/values?labels=dev
 {
-  "datasource.username": "GOPHER-dev",
-  "datasource.password": "LOREM"
+    "values": [
+        {
+            "name": "DATASOURCE_PASSWORD",
+            "value": "LOREM"
+        },
+        {
+            "name": "DATASOURCE_USERNAME",
+            "value": "GOPHER-dev"
+        }
+    ]
 }
 
 GET http://gophersiesta.herokuapp.com/conf/app1/values?labels=prod
 {
-  "datasource.username": "GOPHER-prod",
-  "datasource.url": "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true",
-  "datasource.password": "IPSUM"
+    "values": [
+        {
+            "name": "DATASOURCE_PASSWORD",
+            "value": "IPSUM"
+        },
+        {
+            "name": "DATASOURCE_URL",
+            "value": "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true"
+        },
+        {
+            "name": "DATASOURCE_USERNAME",
+            "value": "GOPHER-prod"
+        }
+    ]
 }
 
 GET http://gophersiesta.herokuapp.com/conf/app1/values?labels=dev,prod
 {
-  "datasource.username": "GOPHER-prod",
-  "datasource.url": "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true",
-  "datasource.password": "IPSUM"
+    "values": [
+        {
+            "name": "DATASOURCE_PASSWORD",
+            "value": "IPSUM"
+        },
+        {
+            "name": "DATASOURCE_USERNAME",
+            "value": "GOPHER-prod"
+        },
+        {
+            "name": "DATASOURCE_URL",
+            "value": "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true"
+        }
+    ]
 }
 
 GET http://gophersiesta.herokuapp.com/conf/app1/values?labels=prod,dev
 {
-  "datasource.username": "GOPHER-dev",
-  "datasource.url": "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true",
-  "datasource.password": "LOREM"
+    "values": [
+        {
+            "name": "DATASOURCE_URL",
+            "value": "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true"
+        },
+        {
+            "name": "DATASOURCE_USERNAME",
+            "value": "GOPHER-dev"
+        },
+        {
+            "name": "DATASOURCE_PASSWORD",
+            "value": "LOREM"
+        }
+    ]
 }
-
 ```
 
 ### Retrieve list of labels
@@ -148,9 +197,86 @@ GET http://gophersiesta.herokuapp.com/conf/app1/labels
 ```
 
 
+### Render config file
+Render replaces the placeholders with the previously stored values. Depending on the provided labels different files, will be rendered
+```
+http://gophersiesta.herokuapp.com/conf/:appname/render/yml
+```
+
+*Example*
+
+```
+http://gophersiesta.herokuapp.com/conf/app1/render/yml
+application:
+  name: App1
+  version: 0.0.1
+datasource:
+  password: FOOBAR
+  url: jdbc:mysql://localhost:3306/shcema?profileSQL=true
+  username: GOPHER
+  
+GET http://gophersiesta.herokuapp.com/conf/app1/render/yml?labels=dev 
+application:
+  name: App1
+  version: 0.0.1
+datasource:
+  password: dev_password
+  url: dev_url
+  username: dev_user
+  
+GET http://gophersiesta.herokuapp.com/conf/app1/render/yml?labels=prod 
+application:
+  name: App1
+  version: 0.0.1
+datasource:
+  password: IPSUM
+  url: jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true
+  username: GOPHER-prod
+```
+
+
+## Command line client
+
+All the API operations are available through a command line APP, because we gophers love the command line.
+
+The best way to explain the functionality is seeing it action:
+
+### Retrieve placeholder values
+
+![alt tag](assets/gophersiesta-cli-recording-1.gif)
+
+In this gif you can see:
+
++ How to retrieve placeholder values.
++ How to retrieve placeholder values by label.
++ How the labels order *matter*.
+
+### Render the final config file
+
+![alt tag](assets/gophersiesta-cli-recording-2.gif)
+
+In this gif you can see:
+
++ How to render the file given a label
+
+### Setting placeholder values all at once
+
+![alt tag](assets/gophersiesta-cli-recording-2.gif)
+
+In this gif you can see:
+
++ How all the values for placeholders for a label are set
+
 ## TODO
 
-+ Render the template conf applying the saved values given some labels
-
++ Herachical config files app merger for a given app and labels
++ Render the template conf applying the saved values given some labels, into *toml*, *json*, *xml*. Currently there is some strange behaviour of *viper* that return strange key type.
++ Web interface.
++ Incorporate the command line client into a docker container to load the placeholder values as ENV variable to enforce [12 factor app](http://12factor.net/config) best practices.
++ Store in consul or etc.
++ Read conf files from github.
++ Wizard to add a new variable for a given app, for currently specified labels.
++ Check if all placeholders are set for a given app, for currently specified labels.
++ If a property have a placeholder with a default value, an no value is stored, the default value is returned
 
 The Gopher character is based on the Go mascot designed by Renée French and copyrighted under the Creative Commons Attribution 3.0 license.
