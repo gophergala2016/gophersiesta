@@ -1,39 +1,39 @@
-package properties
+package placeholders
 import (
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
 	"fmt"
 	"strings"
 )
 
-type Property struct {
+type Placeholder struct {
 	PropertyName string `json:"property_name"` // the full path to the property datasource.url
 	PropertyValue string `json:"property_value"` // ${DATASOURCE_URL:jdbc:mysql://localhost:3306/shcema?profileSQL=true}
 	PlaceHolder string `json:"placeholder"`// DATASOURCE_URL
 }
 
-type Properties struct {
-	Properties []*Property `json:"properties"`
+type Placeholders struct {
+	Placeholders []*Placeholder `json:"placeholders"`
 }
 
 // GetPlaceHolders uses the provided viper configuration to extract properties that have placeholders in is values
-func GetPlaceHolders(conf *viper.Viper) Properties {
+func GetPlaceHolders(conf *viper.Viper) Placeholders {
 	list := parseMap(conf.AllSettings())
 
 	properties := CreateProperties(list)
 
-	return Properties{properties}
+	return Placeholders{properties}
 }
 
 // CreatePropertiesGiven transform the propsMap into a Property struct slice
-func CreateProperties(propsMap map[string]string) []*Property{
+func CreateProperties(propsMap map[string]string) []*Placeholder {
 	count := len(propsMap)
 
-	ps := make([]*Property, count)
+	ps := make([]*Placeholder, count)
 	i := 0
 	for k, v := range propsMap {
 		p, err := extractPlaceholder(v)
 		if (err == nil){
-			p := &Property{k, v, p}
+			p := &Placeholder{k, v, p}
 			ps[i] = p
 		}
 
