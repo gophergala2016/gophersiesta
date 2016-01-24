@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"bytes"
 	"crypto/tls"
-	"strings"
 	"log"
 )
 
@@ -16,28 +15,32 @@ import (
 var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set the values to configuration manager. Needed {appname + label}",
-	Long: "Get the values to be setup. From appname + label",
+	Long: "Set the values to be setup. From appname + label",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Print: " + strings.Join(args, " "))
-
 		var err error
 		var res *http.Response
-		// create post url
-		// https://gophersiesta.herokuapp.com/conf/app1/
-		// Url := Source + "/conf/" + Appname + "/get/?labels=" + Label
-		Url := "http://garciademarina.com/"
+
+		if Source=="" {
+			Source = "https://gophersiesta.herokuapp.com/"
+		}
+		if Source[len(Source)-1:]!="/" {
+			Source += "/"
+		}
+		Url := Source + "conf/" + Appname + "/values"
 		fmt.Println( Url )
 
 		// post data to service
-		jsonString, jsonError := json.Marshal(params)
+		/*jsonString, jsonError := json.Marshal(params)
 		if jsonError!=nil {
 			log.Fatal(jsonError)
-		}
+		} */
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 		client := &http.Client{Transport: tr}
-		req, _ := http.NewRequest("POST", Url, bytes.NewBuffer([]byte(jsonString)))
+
+		fmt.Println(Properties)
+		req, _ := http.NewRequest("POST", Url, bytes.NewBuffer([]byte(Properties)))
 		res, err = client.Do(req)
 		if err!=nil {
 			log.Fatal(err)
@@ -47,26 +50,21 @@ var setCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		res.Body.Close()
-		data := map[string]interface{}{}
+		var data string//map[string]interface{}{}
 		json.Unmarshal(body, &data)
 		
 		fmt.Println(data)
 	},
 }
 
-var params map[string]string
+var Properties string
 
 func init() {
 	RootCmd.AddCommand(setCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// setCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// setCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	setCmd.Flags().StringVarP(&Appname, "appname", "a", "", "Application name")
+	setCmd.Flags().StringVarP(&Source, "source", "s", "https://gophersiesta.herokuapp.com/", "Source directory to read from")
+	setCmd.Flags().StringVarP(&Label, "label", "l", "", "Select label to be fetch")
+	setCmd.Flags().StringVarP(&Properties, "properties", "p", "", "json encoded properties")
 
 }

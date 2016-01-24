@@ -41,6 +41,13 @@ Fetch configuration files for a given <label>.
 Fetched from source url.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		if Source=="" {
+			Source = "https://gophersiesta.herokuapp.com/"
+		}
+		if Source[len(Source)-1:]!="/" {
+			Source += "/"
+		}
+
 		fmt.Println( "Source " + Source )
 		/*
 		err := checkArgs()
@@ -49,7 +56,7 @@ Fetched from source url.`,
 		}
 		*/
 		// https://gophersiesta.herokuapp.com/conf/app1/
-		Url := Source + "/conf/" + Appname 
+		Url := Source + "/conf/" + Appname
 		fmt.Println( Url )
 
 		res, err := http.Get( Url )

@@ -15,8 +15,13 @@ var getCmd = &cobra.Command{
 	Short: "Get the values to be setup. From appname + label",
 	Long: "Get the values to be setup. From appname + label",
 	Run: func(cmd *cobra.Command, args []string) {
-		// https://gophersiesta.herokuapp.com/conf/app1/values
-		Url := Source + "/conf/" + Appname + "/values"
+		if Source=="" {
+			Source = "https://gophersiesta.herokuapp.com/"
+		}
+		if Source[len(Source)-1:]!="/" {
+			Source += "/"
+		}
+		Url := Source + "conf/" + Appname + "/values"
 		fmt.Println( "[api call] " + Url )
 		res, err := http.Get( Url )
 		if err != nil {
@@ -27,6 +32,7 @@ var getCmd = &cobra.Command{
 		fmt.Println(string(body))
 	},
 }
+
 
 func init() {
 	RootCmd.AddCommand(getCmd)
