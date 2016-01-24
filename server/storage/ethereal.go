@@ -59,3 +59,7 @@ func (this *Ethereal) GetOptions(appname, label string) map[string]string {
 	return this.options[appname][label]
 
 }
+
+func (this *Ethereal) Close(){
+	// TODO maybe we can write it to disck
+}

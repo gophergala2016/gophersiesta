@@ -15,28 +15,26 @@ import (
 
 var storage server.Storage
 
-func StartServer() {
+type Server struct {
+	Storage server.Storage
+	*gin.Engine
+}
 
-	storage = &server.Ethereal{} // RAM
+func StartServer() *Server {
+
+	storage = &server.BoltDb{} // RAM
 	//storage = &server.LevelDB{"db/options", nil, nil, nil} // LevelDB
 
 	storage.Init()
 
-	storage.SetOption("app1", "prod", "datasource.url", "jdbc:mysql://proddatabaseserver:3306/shcema?profileSQL=true")
-	storage.SetOption("app1", "", "datasource.username", "GOPHER")
-	storage.SetOption("app1", "dev", "datasource.username", "GOPHER-dev")
-	storage.SetOption("app1", "prod", "datasource.username", "GOPHER-prod")
-	storage.SetOption("app1", "", "datasource.password", "FOOBAR")
-	storage.SetOption("app1", "dev", "datasource.password", "LOREM")
-	storage.SetOption("app1", "prod", "datasource.password", "IPSUM")
-
-	storage.SetOption("app2", "", "datasource.password", "DOCKER-PASS")
-	storage.SetOption("app2", "dev", "datasource.password", "DEV-PASS")
+	server.CreateSampleData(storage)
 
 	router := gin.Default()
 
+	server := &Server{storage, router}
+
 	// This handler will match /conf/appname but will not match neither /conf/ or /conf
-	router.GET("/conf/:appname", func(c *gin.Context) {
+	server.GET("/conf/:appname", func(c *gin.Context) {
 		name := c.Param("appname")
 		myViper, err := readTemplate(name)
 		if err != nil {
@@ -49,7 +47,7 @@ func StartServer() {
 	})
 
 	// Return list of placeholders
-	router.GET("/conf/:appname/placeholders", func(c *gin.Context) {
+	server.GET("/conf/:appname/placeholders", func(c *gin.Context) {
 		name := c.Param("appname")
 		myViper, err := readTemplate(name)
 		if err != nil {
@@ -62,7 +60,7 @@ func StartServer() {
 	})
 
 	// Return list of set values
-	router.GET("/conf/:appname/values", func(c *gin.Context) {
+	server.GET("/conf/:appname/values", func(c *gin.Context) {
 		name := c.Param("appname")
 		labels := c.DefaultQuery("labels", "default")
 
@@ -83,7 +81,9 @@ func StartServer() {
 		c.String(http.StatusOK, string(list_json))
 	})
 
-	router.Run(getPort())
+	server.Run(getPort())
+
+	return server
 }
 
 func getPort() string {
