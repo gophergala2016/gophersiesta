@@ -18,7 +18,6 @@ type Server struct {
 func StartServer() *Server {
 
 	db = &storage.BoltDb{} // RAM
-	//storage = &server.LevelDB{"db/options", nil, nil, nil} // LevelDB
 
 	db.Init()
 
@@ -38,6 +37,9 @@ func StartServer() *Server {
 	server.GET("/conf/:appname/values", handlers.GetValues(db))
 
 	// Return list of set values
+	server.POST("/conf/:appname/values", handlers.SetValues(db))
+
+	// Return list of set labels
 	server.GET("/conf/:appname/labels", handlers.GetLabels(db))
 
 	server.Run(getPort())

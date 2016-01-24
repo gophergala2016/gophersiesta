@@ -6,6 +6,8 @@ import (
 	"github.com/gophergala2016/gophersiesta/server/placeholders"
 	"strings"
 	"github.com/gophergala2016/gophersiesta/server/storage"
+	"fmt"
+	"io/ioutil"
 )
 
 func GetPlaceHolders(c *gin.Context) {
@@ -44,3 +46,32 @@ func GetValues(s storage.Storage) func(c *gin.Context) {
 	}
 }
 
+
+func SetValues(s storage.Storage) func (c *gin.Context) {
+	return func(c *gin.Context) {
+		name := c.Param("appname")
+		labels := c.DefaultQuery("labels", "default")
+
+		body := c.Request.Body
+		x, err := ioutil.ReadAll(body)
+
+		if err != nil {
+			c.String(http.StatusBadRequest, "Bad request")
+		} else {
+
+			data := map[string]interface{}{}
+			json.Unmarshal(x, &data)
+
+			lbls := strings.Split(labels, ",")
+			for _, label := range lbls {
+				for k, v := range data {
+					s.SetOption(name, label, k, fmt.Sprint(v))
+				}
+			}
+
+
+			c.String(http.StatusOK, "Ok")
+		}
+
+	}
+}
