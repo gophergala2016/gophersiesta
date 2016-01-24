@@ -45,3 +45,6 @@ Get the values that are going to be used to generate the template. Labels overri
 
 + Post value for placeholders given some labels
 + Render the templace conf applying the saved values given some labels
+
+
+The Gopher character is based on the Go mascot designed by Renée French and copyrighted under the Creative Commons Attribution 3.0 license.
