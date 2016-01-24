@@ -39,7 +39,7 @@ Fetched from source url.`,
 			source += "/"
 		}
 
-		url := source + "/conf/" + Appname + "/render/yml"
+		url := source + "conf/" + Appname + "/render/yml"
 
 		if Label != "" {
 			url = url + "?labels=" + Label

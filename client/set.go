@@ -18,12 +18,12 @@ var setCmd = &cobra.Command{
 	Long:  "Set all the values to be setup. From appname + label",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		SendProp(Properties)
+		SendProp(Properties, Label)
 	},
 }
 
 
-func SendProp(prop string){
+func SendProp(prop string, label string){
 	var err error
 	var res *http.Response
 
@@ -35,8 +35,13 @@ func SendProp(prop string){
 	if source[len(source)-1:] != "/" {
 		source += "/"
 	}
-	Url := Source + "conf/" + Appname + "/values"
-	fmt.Println(Url)
+	url := Source + "conf/" + Appname + "/values"
+
+	if label != "" {
+		url = url + "?labels=" + label
+	}
+
+	fmt.Println(url)
 
 
 	tr := &http.Transport{
@@ -45,7 +50,7 @@ func SendProp(prop string){
 	client := &http.Client{Transport: tr}
 
 	fmt.Println(prop)
-	req, _ := http.NewRequest("POST", Url, bytes.NewBuffer([]byte(prop)))
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer([]byte(prop)))
 	res, err = client.Do(req)
 	if err != nil {
 		log.Fatal(err)

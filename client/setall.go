@@ -70,8 +70,9 @@ func readPlaceHolders() (*placeholders.Placeholders, error) {
 	}
 	url := source + "conf/" + Appname + "/placeholders"
 
-	if Label != "" {
-		url = url + "?labels=" + Label
+	label := Label
+	if label != "" {
+		url = url + "?labels=" + label
 	}
 
 	fmt.Println("[api call] " + url)
@@ -133,7 +134,7 @@ func setPropertyHolderValue(p *placeholders.Placeholder, currentVal string) {
 		buff.WriteString("=")
 		buff.WriteString(value)
 
-		SendProp(string(buff.Bytes()))
+		SendProp(string(buff.Bytes()), Label)
 	}
 }
 
