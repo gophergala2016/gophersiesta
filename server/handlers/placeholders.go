@@ -64,14 +64,27 @@ func SetValues(s storage.Storage) func (c *gin.Context) {
 			json.Unmarshal(x, &data)
 
 			lbls := strings.Split(labels, ",")
-			for _, label := range lbls {
-				for k, v := range data {
-					s.SetOption(name, label, k, fmt.Sprint(v))
+			if len(data)>0 { //it's a JSON
+				for _, label := range lbls {
+					for k, v := range data {
+						s.SetOption(name, label, k, fmt.Sprint(v))
+					}
 				}
+				c.String(http.StatusOK, "Ok")
+			} else if strings.Contains(string(x), "=") {
+				pairs := strings.Split(string(x), ",")
+				for _, label := range lbls {
+					for _, v := range pairs {
+						vv := strings.Split(v, "=")
+						s.SetOption(name, label, vv[0], strings.Join(vv[1:], "="))
+					}
+				}
+				c.String(http.StatusOK, "Ok")
+			} else {
+				c.String(http.StatusBadRequest, "Properties not well-formed")
 			}
 
 
-			c.String(http.StatusOK, "Ok")
 		}
 
 	}
