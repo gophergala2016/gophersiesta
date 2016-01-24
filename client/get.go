@@ -3,27 +3,27 @@ package client
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/cobra"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
 )
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get --appname=[appname] --source=[source_url]",
 	Short: "Get the values to be setup. From appname + label",
-	Long: "Get the values to be setup. From appname + label",
+	Long:  "Get the values to be setup. From appname + label",
 	Run: func(cmd *cobra.Command, args []string) {
-		if Source=="" {
+		if Source == "" {
 			Source = "https://gophersiesta.herokuapp.com/"
 		}
-		if Source[len(Source)-1:]!="/" {
+		if Source[len(Source)-1:] != "/" {
 			Source += "/"
 		}
 		Url := Source + "conf/" + Appname + "/values"
-		fmt.Println( "[api call] " + Url )
-		res, err := http.Get( Url )
+		fmt.Println("[api call] " + Url)
+		res, err := http.Get(Url)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -32,7 +32,6 @@ var getCmd = &cobra.Command{
 		fmt.Println(string(body))
 	},
 }
-
 
 func init() {
 	RootCmd.AddCommand(getCmd)

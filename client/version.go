@@ -17,14 +17,14 @@ package client
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/cobra"
 )
 
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Prints client version.",
-	Long: "Prints client version.",
+	Long:  "Prints client version.",
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("gophersiesta-client v.0.1")

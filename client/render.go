@@ -17,7 +17,7 @@ package client
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/cobra"
 	"net/http"
 
 	"io/ioutil"
@@ -41,25 +41,25 @@ Fetch configuration files for a given <label>.
 Fetched from source url.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if Source=="" {
+		if Source == "" {
 			Source = "https://gophersiesta.herokuapp.com/"
 		}
-		if Source[len(Source)-1:]!="/" {
+		if Source[len(Source)-1:] != "/" {
 			Source += "/"
 		}
 
-		fmt.Println( "Source " + Source )
+		fmt.Println("Source " + Source)
 		/*
-		err := checkArgs()
-		if err != nil {
-			log.Fatal(err)
-		}
+			err := checkArgs()
+			if err != nil {
+				log.Fatal(err)
+			}
 		*/
 		// https://gophersiesta.herokuapp.com/conf/app1/
 		Url := Source + "/conf/" + Appname
-		fmt.Println( Url )
+		fmt.Println(Url)
 
-		res, err := http.Get( Url )
+		res, err := http.Get(Url)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -68,11 +68,9 @@ Fetched from source url.`,
 
 		body, _ := ioutil.ReadAll(res.Body)
 
-
 		fmt.Println(string(body))
 	},
 }
-
 
 var Appname string
 var Source string
@@ -81,17 +79,16 @@ var Label string
 func init() {
 	RootCmd.AddCommand(renderCmd)
 
+	/*	aError := make([]error, 2)
+		if err := renderCmd.MarkFlagRequired("appname") ; err != nil {
+			aError[0] = err
+			log.Printf(" -> %q\n", err)
+		}
 
-/*	aError := make([]error, 2)
-	if err := renderCmd.MarkFlagRequired("appname") ; err != nil {
-		aError[0] = err
-		log.Printf(" -> %q\n", err)
-	}
-
-	if err := renderCmd.MarkFlagRequired("source") ; err != nil {
-		aError[1] = err
-		log.Printf(" -> %q\n", err)
-	}*/
+		if err := renderCmd.MarkFlagRequired("source") ; err != nil {
+			aError[1] = err
+			log.Printf(" -> %q\n", err)
+		}*/
 	renderCmd.Flags().StringVarP(&Appname, "appname", "a", "", "Application name")
 	renderCmd.Flags().StringVarP(&Source, "source", "s", "", "Source directory to read from")
 	renderCmd.Flags().StringVarP(&Label, "label", "l", "", "Select label to be fetch")
