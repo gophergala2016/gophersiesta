@@ -2,9 +2,10 @@ package storage
 
 type Storage interface {
 	Init()
-	SetOption(appname, label, variable, value string)
-	GetOption(appname, label, variable string) string
-	GetOptions(appname, label string) map[string]string
+	GetLabels(appname string) []string
+	SetOption(appname  string, label  string, variable  string, value string)
+	GetOption(appname  string, label  string, variable string) string
+	GetOptions(appname  string, label string) map[string]string
 	Close()
 }
 

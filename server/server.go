@@ -42,6 +42,8 @@ func StartServer() *Server {
 	// Return the rendered template
 	server.GET("/conf/:appname/render/:format", handlers.ReplacePlaceholders(db))
 
+	// Return list of set labels
+	server.GET("/conf/:appname/labels", handlers.GetLabels(db))
 
 	server.Run(getPort())
 
