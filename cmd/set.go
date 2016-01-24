@@ -29,7 +29,7 @@ var setCmd = &cobra.Command{
 		Url := Source + "conf/" + Appname + "/values"
 		fmt.Println( Url )
 
-		// post data to service
+		// Data is already a json (or should be)
 		/*jsonString, jsonError := json.Marshal(params)
 		if jsonError!=nil {
 			log.Fatal(jsonError)
