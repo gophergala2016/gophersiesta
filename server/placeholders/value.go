@@ -1,7 +1,7 @@
 package placeholders
 
 type Value struct {
-	Name string `json:"name"`
+	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 

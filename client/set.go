@@ -22,8 +22,7 @@ var setCmd = &cobra.Command{
 	},
 }
 
-
-func SendProp(prop string, label string){
+func SendProp(prop string, label string) {
 	var err error
 	var res *http.Response
 
@@ -42,7 +41,6 @@ func SendProp(prop string, label string){
 	}
 
 	fmt.Println(url)
-
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},

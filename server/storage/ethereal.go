@@ -1,6 +1,5 @@
 package storage
 
-
 type Ethereal struct {
 	options map[string]map[string]map[string]string
 }
@@ -9,10 +8,10 @@ func (e *Ethereal) Init() {
 	e.options = make(map[string]map[string]map[string]string)
 }
 
-func (e *Ethereal) GetLabels(appname string) []string{
+func (e *Ethereal) GetLabels(appname string) []string {
 	lbls := make([]string, 0)
 
-	if e.options[appname] !=nil {
+	if e.options[appname] != nil {
 		for k, _ := range e.options[appname] {
 			lbls = append(lbls, k)
 		}
@@ -23,14 +22,14 @@ func (e *Ethereal) GetLabels(appname string) []string{
 
 func (e *Ethereal) SetOption(appname, label, variable, value string) {
 
-	if label=="" {
+	if label == "" {
 		label = "default"
 	}
 
-	if e.options[appname]==nil {
+	if e.options[appname] == nil {
 		e.options[appname] = make(map[string]map[string]string)
 	}
-	if e.options[appname][label]==nil {
+	if e.options[appname][label] == nil {
 		e.options[appname][label] = make(map[string]string)
 	}
 
@@ -40,14 +39,14 @@ func (e *Ethereal) SetOption(appname, label, variable, value string) {
 
 func (e *Ethereal) GetOption(appname, label, variable string) string {
 
-	if label=="" {
+	if label == "" {
 		label = "default"
 	}
 
-	if e.options[appname]==nil {
+	if e.options[appname] == nil {
 		e.options[appname] = make(map[string]map[string]string)
 	}
-	if e.options[appname][label]==nil {
+	if e.options[appname][label] == nil {
 		e.options[appname][label] = make(map[string]string)
 	}
 
@@ -57,14 +56,14 @@ func (e *Ethereal) GetOption(appname, label, variable string) string {
 
 func (e *Ethereal) GetOptions(appname, label string) map[string]string {
 
-	if label=="" {
+	if label == "" {
 		label = "default"
 	}
 
-	if e.options[appname]==nil {
+	if e.options[appname] == nil {
 		e.options[appname] = make(map[string]map[string]string)
 	}
-	if e.options[appname][label]==nil {
+	if e.options[appname][label] == nil {
 		e.options[appname][label] = make(map[string]string)
 	}
 
@@ -72,6 +71,6 @@ func (e *Ethereal) GetOptions(appname, label string) map[string]string {
 
 }
 
-func (e *Ethereal) Close(){
+func (e *Ethereal) Close() {
 	// TODO maybe we can write it to disck
 }

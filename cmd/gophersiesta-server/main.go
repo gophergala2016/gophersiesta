@@ -1,7 +1,8 @@
 package main
+
 import "github.com/gophergala2016/gophersiesta/server"
 
-func main()  {
+func main() {
 
 	s := server.StartServer()
 

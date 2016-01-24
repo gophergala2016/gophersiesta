@@ -20,7 +20,6 @@ var getCmd = &cobra.Command{
 	},
 }
 
-
 func GetValues() []byte {
 	source := Source
 	if source == "" {
@@ -31,7 +30,7 @@ func GetValues() []byte {
 	}
 	url := source + "conf/" + Appname + "/values"
 
-	if (Label != ""){
+	if Label != "" {
 		url = url + "?labels=" + Label
 	}
 

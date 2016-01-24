@@ -13,11 +13,9 @@
 // limitations under the License.
 
 package main
-import "github.com/gophergala2016/gophersiesta/client"
 
+import "github.com/gophergala2016/gophersiesta/client"
 
 func main() {
 	client.Execute()
 }
-
-

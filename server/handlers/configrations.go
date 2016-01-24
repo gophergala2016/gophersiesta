@@ -2,18 +2,17 @@ package handlers
 
 import (
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	"net/http"
 	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
-	"github.com/gophergala2016/gophersiesta/server/storage"
-	"os"
-	"io"
-	"path/filepath"
-	"strings"
 	"github.com/gophergala2016/gophersiesta/server/placeholders"
-	"regexp"
+	"github.com/gophergala2016/gophersiesta/server/storage"
+	"io"
 	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
 )
-
 
 type Labels struct {
 	Labels []string `json:"labels"`
@@ -29,7 +28,7 @@ func GetConfig(c *gin.Context) {
 		filename := myViper.ConfigFileUsed()
 		content, err := fileReader(filename)
 
-		if (err != nil){
+		if err != nil {
 			c.String(http.StatusNotFound, "Config file for %s not found\n", name)
 		}
 		w := c.Writer
@@ -39,8 +38,8 @@ func GetConfig(c *gin.Context) {
 	}
 }
 
-func GetLabels(s storage.Storage) func (c *gin.Context){
-	return func (c *gin.Context) {
+func GetLabels(s storage.Storage) func(c *gin.Context) {
+	return func(c *gin.Context) {
 
 		name := c.Param("appname")
 
@@ -88,13 +87,13 @@ func readConfigFile(v *viper.Viper) string {
 
 	r, err := fileReader(filename)
 
-	if err != nil{
+	if err != nil {
 		return ""
 	}
 
 	configFile, err := ioutil.ReadAll(r)
 
-	if err != nil{
+	if err != nil {
 		return ""
 	}
 

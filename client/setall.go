@@ -43,8 +43,6 @@ func getPlaceholders() {
 		fmt.Printf("%s [$%s]\n", p.PropertyName, p.PlaceHolder)
 	}
 
-
-
 	fmt.Printf("\n\n")
 	fmt.Printf("Type value for each placeholder and press ENTER, or ENTER to skip or left as before: \n")
 	fmt.Printf("	explanation: property.path [$PLACE_HOLDER] --> curentvalue \n")
@@ -94,7 +92,7 @@ func readPlaceHolders() (*placeholders.Placeholders, error) {
 	return pls, err
 }
 
-func readValues() (map[string]string, error){
+func readValues() (map[string]string, error) {
 
 	vs := &placeholders.Values{}
 	mValues := make(map[string]string)

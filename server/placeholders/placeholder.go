@@ -1,14 +1,15 @@
 package placeholders
+
 import (
-	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
 	"fmt"
+	"github.com/gophergala2016/gophersiesta/Godeps/_workspace/src/github.com/spf13/viper"
 	"strings"
 )
 
 type Placeholder struct { // ${DATASOURCE_URL:jdbc:mysql://localhost:3306/shcema?profileSQL=true}
-	PropertyName string `json:"property_name"` // the full path to the property datasource.url
+	PropertyName  string `json:"property_name"`  // the full path to the property datasource.url
 	PropertyValue string `json:"property_value"` // jdbc:mysql://localhost:3306/shcema?profileSQL=true
-	PlaceHolder string `json:"placeholder"`// DATASOURCE_URL
+	PlaceHolder   string `json:"placeholder"`    // DATASOURCE_URL
 }
 
 type Placeholders struct {
@@ -32,7 +33,7 @@ func CreateProperties(propsMap map[string]string) []*Placeholder {
 	i := 0
 	for k, v := range propsMap {
 		p, d, err := extractPlaceholder(v)
-		if (err == nil){
+		if err == nil {
 			p := &Placeholder{k, d, p}
 			ps[i] = p
 		}
@@ -43,7 +44,7 @@ func CreateProperties(propsMap map[string]string) []*Placeholder {
 	return ps
 }
 
-func extractPlaceholder(s string) (string, string, error){
+func extractPlaceholder(s string) (string, string, error) {
 	if s[:2] != "${" {
 		return "", "", fmt.Errorf("%s does not contain any placeholder with format ${PLACEHOLER_VARIABLE[:defaultvalue]}", s)
 	}
@@ -53,7 +54,7 @@ func extractPlaceholder(s string) (string, string, error){
 	}
 
 	s = s[2:]
-	s = s[0:len(s)-1]
+	s = s[0 : len(s)-1]
 
 	defaultValue := ""
 	if strings.Contains(s, ":") {
